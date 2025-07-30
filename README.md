@@ -49,7 +49,7 @@ def PDVReport(self) - pdf report with all datas and graph for basic analysis, da
     -numpy
     -pyqt
     -pyqtwebengine
-    -python=3.11
+    -python 3.11
     -scipy
     -spyder
     -tk
