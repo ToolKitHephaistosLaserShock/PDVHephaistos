@@ -8,11 +8,9 @@ Ecole nationale supérieure d'arts et métiers
 
 ENSAM, 2014.
 
-
 Français. ⟨NNT : 2014ENAM0044⟩. ⟨tel-01165754⟩
 
 https://pastel.hal.science/tel-01165754
-
 
 
 Base signal for analysis :Tension(Time)
@@ -33,6 +31,7 @@ Working directory
         -Graphs 
         -Report
 ******************************
+
 def DataLoad(self,LinesSuppressed) load data from .csv file Tension(Time). 
        
 def PDVSetFrAcquisition(self) - Extract sample rate in GS/s
@@ -46,7 +45,6 @@ def SetVelocity(s%matplotlib inlineelf) - calculate velocity m/ss
 def PDVReport(self) - pdf report with all datas and graph for basic analysis, datas, FFFT, Spectrogram,baseline.  
 
 **Working on Cond env with  :** 
-
     -matplotlib
     -numpy
     -pyqt
@@ -57,3 +55,5 @@ def PDVReport(self) - pdf report with all datas and graph for basic analysis, da
     -tk
     -pandas
     -reportlab
+**ShotTest.zip contains an example to be tested**
+
