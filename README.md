@@ -45,14 +45,14 @@ def SetVelocity(s%matplotlib inlineelf) - calculate velocity m/ss
 
 def PDVReport(self) - pdf report with all datas and graph for basic analysis, datas, FFFT, Spectrogram,baseline.  
 
-Working on Cond env with  : 
-    - matplotlib
-    - numpy
-    - pyqt
-    - pyqtwebengine
-    - python=3.11
-    - scipy
-    - spyder
-    - tk
-    - pandas
-    - reportlab
+**Working on Cond env with  :** 
+    -matplotlib
+    -numpy
+    -pyqt
+    -pyqtwebengine
+    -python=3.11
+    -scipy
+    -spyder
+    -tk
+    -pandas
+    -reportlab
