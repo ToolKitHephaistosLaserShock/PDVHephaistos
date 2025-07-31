@@ -36,18 +36,19 @@ Base signal for analysis :Tension(Time) .csv file
         - ShotNumber.csvRawDatas.png # RawDatas plot image .png
         - ShotNumber.csvSpectrogram.png # Last calculation for Spectrogram plot image .png
 ******************************
+**Main function**
 
-def DataLoad(self,LinesSuppressed) load data from .csv file Tension(Time). 
+    - def DataLoad(self,LinesSuppressed) load data from .csv file Tension(Time). 
        
-def PDVSetFrAcquisition(self) - Extract sample rate in GS/s
+    - def PDVSetFrAcquisition(self) - Extract sample rate in GS/s
 
-def SetPDVFFT(self) - calculate FFT of raw datas :  Tension and related Time
+    - def SetPDVFFT(self) - calculate FFT of raw datas :  Tension and related Time
 
-def SetSTFTPDV(self,nperseg) - Calculate STFT from raw data on number of point - nperseg
+    - def SetSTFTPDV(self,nperseg) - Calculate STFT from raw data on number of point - nperseg
 
-def SetVelocity() - calculate velocity m/ss
+    - def SetVelocity() - calculate velocity m/ss
 
-def PDVReport() - pdf report with all datas and graph for basic analysis, datas, FFFT, Spectrogram,baseline.  
+    - def PDVReport() - pdf report with all datas and graph for basic analysis, datas, FFFT, Spectrogram,baseline.  
 
 **Working on Conda env with  :**
 
