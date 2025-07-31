@@ -27,11 +27,14 @@ Base signal for analysis :Tension(Time) .csv file
 
 **Working directory**
 
-    - PDVWorking.ipynb
-    -- ShotNumberDirectory
-        - RawDatas
-        - Graphs 
-        - Report
+    - PDVWorking.py
+    - PDVExtractSignalAndAnalysisBetaTest.py
+    -- ShotNumber Directory
+        - ShotNumber.csv #data sets file .csv Time(s),Tension(V)
+        - ShotNumber.csvVelocity.csv # Velocity extracted file .cvs Time(ns),Velocity(m/s)
+        - ShotNumber.csvVelocity.png # Velocity plot image .png
+        - ShotNumber.csvRawDatas.png # RawDatas plot image .png
+        - ShotNumber.csvSpectrogram.png # Last calculation for Spectrogram plot image .png
 ******************************
 
 def DataLoad(self,LinesSuppressed) load data from .csv file Tension(Time). 
