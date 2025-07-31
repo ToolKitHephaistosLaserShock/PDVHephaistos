@@ -97,21 +97,23 @@ class RedirectConsole:
         pass
 
 class PDV :
-    def __init__(self,ChainResponse,Shift,PDVFactor,FName,ShotNumber,nperseg):
-        
+    def __init__(self,LambdaLaser,ChainResponse,Shift,FName,ShotNumber,nperseg):
+        #all are calculate in SI but on application print in Nm and Ghz
+        self.LambdaLaser=LambdaLaser*1e-9 #>SI
         self.Shift=Shift*1e9 #Hz PDV shift of reference Laser
         self.FName=FName #ShotName
         self.ChainResponse=ChainResponse*1e9
         self.ShotNumber=ShotNumber
-        self.PDVFactor=PDVFactor
+        self.PDVFactor=self.LambdaLaser/2
         self.nperseg=nperseg
-        print ("## Start analysis#####")
-        print ("Reminder parameter")
-        print("Shot Number        : ",self.ShotNumber)
-        print("FName :            : ",self.FName)
-        print("ChainResponse (Hz) : ",self.ChainResponse,' Max Corresponding Velocity  (m/s) : ',self.ChainResponse*self.PDVFactor)
-        print("Shift (Hz)         : ",self.Shift, ' Max Corresponding Velocity (m/s) : ',self.Shift*self.PDVFactor)
-        print("PDVFactor m/s/Hz   : ",self.PDVFactor)
+        self.STFTPDVWindow='hamming'
+        
+        
+        #print ("Design*****")
+        self.VPivot=self.LambdaLaser*self.Shift/2
+        #print("VPivot (m/s) :",self.VPivot)
+        self.MaxVelocityForChainResponse=self.PDVFactor*self.ChainResponse
+        
         plt.close('all')
     
     def DataLoad(self,LinesSuppressed):
@@ -163,9 +165,11 @@ class PDV :
         # Calculate STFT (from segment nperseg (number of point), Sample rates,  output: Fefrequency : FPDV and related Time 
         #print ("## STFT signal calculation")
         self.SegSize=nperseg
+        #print("neperseg: ",self.nperseg)
+        #print("Window : "+self.STFTPDVWindow)
         self.WindowsSize=self.Dtime*self.SegSize
         #print (' Window (ns): ', self.WindowsSize*1e9) 
-        self.FePDV, self.Time_stft, self.PDVSpectrogram = stft(self.Tension, self.FAcquisiton, nperseg=nperseg)
+        self.FePDV, self.Time_stft, self.PDVSpectrogram = stft(self.Tension, self.FAcquisiton, nperseg=nperseg,window=self.STFTPDVWindow)
         return
     
     def SetVelocity(self):
@@ -177,7 +181,7 @@ class PDV :
     def NotebookGraph(self):   
         self.root = tk.Tk()
         default_font = tkFont.nametofont("TkDefaultFont")
-        default_font.configure(family="Helvetica", size=12)
+        default_font.configure(family="Verdana", size=12)
         self.root.title("PDV Analysis")
         self.shot_var = tk.StringVar()
         self.fname_var= tk.StringVar()
@@ -189,10 +193,16 @@ class PDV :
         self.notebook = ttk.Notebook(self.root)
         self.notebook.pack(fill=tk.BOTH, expand=1)
     
-        # Onglet Inputs seulement au démarrage
+        # Onglet Inputs at 
         self.frame_inputs = ttk.Frame(self.notebook)
         self.notebook.add(self.frame_inputs, text="Data Load & Operation")
         self.CreateInputsTab(self.frame_inputs)
+        
+        #Console output
+        self.CreateConsoleTab()
+        sys.stdout = RedirectConsole(self.text_console)
+        sys.stderr = RedirectConsole(self.text_console)
+        
     
         # Ferme toute figure matplotlib résiduelle
         for fig_num in plt.get_fignums():
@@ -200,43 +210,104 @@ class PDV :
     
     
     def CreateInputsTab(self, parent):
+        style = ttk.Style()
+        style.configure('TButton', font=('Arial', 12, 'bold'))
         # Variables
         self.shot_dir = tk.StringVar()
         self.fname = tk.StringVar()
         self.nperseg_var = tk.IntVar(value=500)
         self.ChainResponse_var = tk.DoubleVar(value=self.ChainResponse * 1e-9)
+        Wavelength=self.LambdaLaser*1e9
+        self.LambdaLaser_var= tk.StringVar(value=f'{Wavelength:.3f}')
+        self.Shift_var= tk.DoubleVar(value=self.Shift * 1e-9)
+        self.MaxVelocityForChainResponse_var=tk.StringVar(value=f'{self.MaxVelocityForChainResponse:.3f}')
+        self.VPivot_var=tk.StringVar(value=f'{self.VPivot:.3f}')
+        
+        ttk.Label(parent, text="PDV Analysis", font=("Arial", 14, "bold")).pack(anchor="w", padx=10)
+        ttk.Separator(parent, orient="horizontal").pack(fill="x", padx=10, pady=5,ipady=3)
         
         # Choix du répertoire (ShotNumber)
         ttk.Label(parent, text="Shot Directory:").pack(pady=5)
         frame_dir = tk.Frame(parent)
         frame_dir.pack()
         tk.Entry(frame_dir, textvariable=self.shot_dir, width=50).pack(side=tk.LEFT, padx=5)
-        tk.Button(frame_dir, text="Parcourir", command=self.select_directory).pack(side=tk.LEFT)
+        tk.Button(frame_dir, text="Select Directory", command=self.select_directory).pack(side=tk.LEFT)
     
         # Choix du fichier (FName)
-        ttk.Label(parent, text="Fichier à analyser:").pack(pady=5)
+        ttk.Label(parent, text="File to analyse .csv with template (Time(s),Tension(V))").pack(pady=5)
         frame_file = tk.Frame(parent)
         frame_file.pack()
         tk.Entry(frame_file, textvariable=self.fname, width=50).pack(side=tk.LEFT, padx=5)
-        tk.Button(frame_file, text="Choisir Fichier", command=self.select_file).pack(side=tk.LEFT)
+        tk.Button(frame_file, text="Select File ", command=self.select_file).pack(side=tk.LEFT)
     
         # nperseg
-        ttk.Label(parent, text="nperseg (FFT window size in number of point) :").pack(pady=5)
+        ttk.Label(parent, text="Initial nperseg (FFT window size in number of point) :").pack(pady=5)
         tk.Entry(parent, textvariable=self.nperseg_var).pack()
-    
-        # Lancer analyse
-        ttk.Button(parent, text="Load Data Set", command=self.launch_analysis).pack(pady=15)
         
-        ttk.Button(parent, text="Exit", command=self.root.destroy).pack(pady=10)
+        # Launch analysis
+        ttk.Label(parent, text="Spectrogram, Raw datas and velocity figures are saved in png format ").pack(pady=15)
+        ttk.Label(parent, text="Velocity data set in .csv file in ShotNumber Directory").pack(pady=5)
+        ttk.Button(parent, text="Load Data Set for analysis", style='TButton',command=self.launch_analysis).pack(pady=5)
+        
+        ttk.Label(parent, text="PDV parameters", font=("Arial", 14, "bold")).pack(anchor="w", padx=10)
+        ttk.Separator(parent, orient="horizontal").pack(fill="x", padx=10, pady=5)
+        
+        # LaserPDV Wavelength
+        ttk.Label(parent, text="Laser PDV Wavelength (nm) :").pack(pady=15)
+        tk.Entry(parent, textvariable=self.LambdaLaser_var, width=15).pack()
+                
+        # Frame contenant la ligne complète
+        line_frame = ttk.Frame(parent)
+        line_frame.pack(anchor="w", pady=5)
+        
+        # Bloc 1 : Chain Response
+        chain_frame = ttk.Frame(line_frame)
+        chain_frame.pack(side=tk.LEFT, padx=10)
+        ttk.Label(chain_frame, text="Chain Response (Ghz) :").pack(anchor="w")
+        tk.Entry(chain_frame, textvariable=self.ChainResponse_var, width=15).pack()
+        
+        # Bloc 1 : Max Velocity
+        velocity_frame = ttk.Frame(line_frame)
+        velocity_frame.pack(side=tk.LEFT, padx=10)
+        ttk.Label(velocity_frame, text="Max Velocity (m/s)").pack(anchor="w")
+        tk.Entry(velocity_frame, text=self.MaxVelocityForChainResponse_var, width=15).pack()
+
+        
+        line_frame = ttk.Frame(parent)
+        line_frame.pack(anchor="w", pady=5)
+        
+        # Bloc 1 : Shift
+        chain_frame = ttk.Frame(line_frame)
+        chain_frame.pack(side=tk.LEFT, padx=10)
+        
+        # Laser Shift
+        ttk.Label(chain_frame, text="LaserPDV Shift in Ghz :").pack(anchor="w")
+        tk.Entry(chain_frame, textvariable=self.Shift_var, width=15).pack()
+        
+        # Bloc 2 : Pivot Velocity
+        velocityPivot_frame = ttk.Frame(line_frame)
+        velocityPivot_frame.pack(side=tk.LEFT, padx=10)
+        ttk.Label(velocityPivot_frame, text="Pivot Velocity (m/s)").pack(anchor="w")
+        tk.Entry(velocityPivot_frame, text=self.VPivot_var, width=15).pack()
+               
+            
+        # PDV parameters lauch
+        
+        ttk.Button(parent, text="PDV Parameters Calculations", style='TButton',command=self.PDVParameters).pack(pady=15)
+        
+        ttk.Separator(parent, orient="horizontal").pack(fill="x", padx=10, pady=10, ipady=3)
+        
+        ttk.Button(parent, text="Exit", style='TButton', command=lambda: os._exit(0)).pack(pady=10)
+
     
     def select_directory(self):
-        dirname = fd.askdirectory(title="Choose Shot Directory")
+        dirname = fd.askdirectory(title="Select Shot Directory")
         if dirname:
             self.shot_dir.set(dirname)
     
     def select_file(self):
         initialdir = self.shot_dir.get() if self.shot_dir.get() else "."
-        filename = fd.askopenfilename(title="Choose raw datas file", initialdir=initialdir)
+        filename = fd.askopenfilename(title="Select raw datas file .csv (Time(s), Tension(V))", initialdir=initialdir)
         if filename:
             self.fname.set(os.path.basename(filename))
             self.selected_file_fullpath = filename  # Chemin complet si besoin plus tard
@@ -262,19 +333,16 @@ class PDV :
         
         for tab_id in self.notebook.tabs():
             tab_text = self.notebook.tab(tab_id, "text")
-            if tab_text != "Data Load & Operation":
+            if tab_text not in ("Data Load & Operation","Console Output"):
                 self.notebook.forget(tab_id)
         
-        
-        self.CreateConsoleTab()
-        sys.stdout = RedirectConsole(self.text_console)
-        sys.stderr = RedirectConsole(self.text_console)
         
         # Récupère les valeurs saisies
         self.ShotNumber = self.shot_dir.get()
         self.FName = self.fname.get()
         self.nperseg = self.nperseg_var.get()
-        self.ChainResponse =self.ChainResponse_var.get()*1e9
+        
+        #self.ChainResponse =self.ChainResponse_var.get()*1e9
         
         #print(self.ShotNumber,self.FName)
         # Charge tes données, calcule le STFT, etc.
@@ -290,6 +358,15 @@ class PDV :
         os.chdir(WorkDirectory)
         print('Current Directory : ', os.getcwd())
         
+        print ("## Start analysis#####")
+        print ("Reminder parameter")
+        print("Shot Number        : ",self.ShotNumber)
+        print("FName :            : ",self.FName)
+        print("ChainResponse (Hz) : ",self.ChainResponse,' Max Corresponding Velocity  (m/s) : ',self.ChainResponse*self.PDVFactor)
+        print("Shift (Hz)         : ",self.Shift, ' Max Corresponding Velocity (m/s) : ',self.Shift*self.PDVFactor)
+        print("PDVFactor m/s/Hz   : ",self.PDVFactor)
+        print("window type        :"+self.STFTPDVWindow)
+        
         self.DataLoad(1)  # ← remplace par ta fonction réelle
         self.PDVSetFrAcquisition()
         self.SetPDVFFT()
@@ -298,11 +375,6 @@ class PDV :
         for fig_num in plt.get_fignums():
             plt.close(fig_num)
     
-        # Supprimer les onglets s’ils existent déjà
-        for tab in self.notebook.tabs():
-            label = self.notebook.tab(tab, "text")
-            if label in ["STFT Interactive", "Raw Datas"]:
-                self.notebook.forget(tab)
     
         # Onglet STFT Interactive
         self.frame_stft = ttk.Frame(self.notebook)
@@ -326,8 +398,6 @@ class PDV :
         self.fig, self.ax = plt.subplots(figsize=(6, 4))
         self.canvas = FigureCanvasTkAgg(self.fig, master=parent)
         self.canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
-        for fig_num in plt.get_fignums():
-            plt.close(fig_num)
         self.toolbar = NavigationToolbar2Tk(self.canvas, parent)
         self.toolbar.update()
         self.toolbar.pack(side=tk.TOP, fill=tk.X)
@@ -339,6 +409,15 @@ class PDV :
         self.ax.set_xlabel("Time (s)")
         self.ax.set_ylabel("Frequency (Hz)")
     
+        self.STFTPDVWindow_var = tk.StringVar(value=self.STFTPDVWindow)
+        fenetres = ['hann', 'hamming', 'blackman', 'bartlett', 'flattop']
+
+        ttk.Label(parent, text="Windows STFT :").pack(anchor="w", padx=10, pady=(10, 0))
+        combo = ttk.Combobox(parent, textvariable=self.STFTPDVWindow_var, values=fenetres, state="readonly")
+        combo.pack(anchor="w", padx=10, pady=5)
+        combo.bind('<<ComboboxSelected>>', lambda e: self.update_STFTPDVInteractiveplot(self.slider.get()))
+    
+        
         self.slider = ttk.Scale(parent, from_=64, to=2048, orient='horizontal')
         self.slider.set(self.param)
         self.slider.pack(fill=tk.X, padx=15, pady=15)
@@ -361,25 +440,39 @@ class PDV :
         
                   
     def update_STFTPDVInteractiveplot(self, val):
-        self.param = int(float(val))
-        self.label.config(text=f"STFT Window (nperseg) = {self.param} pt , {self.WindowsSize*1e9:.3f} ns ")
-
+        val = float(val)
+        window = self.STFTPDVWindow_var.get()
+        self.STFTPDVWindow = window
+        self.param = int(val)
+        self.nperseg=self.param
+        self.label.config(
+            text=f"STFT Window (nperseg) = {self.param} pt, {self.WindowsSize*1e9:.3f} ns, Window: {self.STFTPDVWindow}"
+        )
+    
         xlim = self.ax.get_xlim()
         ylim = self.ax.get_ylim()
-
-        self.SetSTFTPDV(self.param)  # recalculer
-
+    
+        # Recalculer STFT
+        self.SetSTFTPDV(self.param)
+    
+        # Effacer seulement le contenu des axes
         self.ax.clear()
-        self.quadmesh = self.ax.pcolormesh(self.Time_stft, self.FePDV, np.abs(self.PDVSpectrogram), shading='gouraud')
+    
+        # Tracer à nouveau
+        self.quadmesh = self.ax.pcolormesh(
+            self.Time_stft,
+            self.FePDV,
+            np.abs(self.PDVSpectrogram),
+            shading='gouraud'
+        )
+    
         self.ax.set_xlabel("Time (s)")
         self.ax.set_ylabel("Frequency (Hz)")
         self.ax.set_title("Spectrogram")
         self.ax.set_xlim(xlim)
         self.ax.set_ylim(ylim)
-        self.fig.savefig('PDVSignal.png')
-        
-        for fig_num in plt.get_fignums():
-            plt.close(fig_num)
+        self.fig.savefig(self.FName+'Spectrogram.png')
+        # Mettre à jour la figure dans Tkinter
         self.canvas.draw_idle()
     
     def ExtractVelocityNotebook(self):
@@ -426,7 +519,7 @@ class PDV :
                 ax_vel.legend()
                 print ('Save velocity profile in '+self.FName+"VelocityProfile.csv")
                 np.savetxt(self.FName+"VelocityProfile.csv", np.vstack((x ,y)).T, delimiter=',')
-                fig_vel.savefig('Velocity.png')
+                fig_vel.savefig(self.FName+'Velocity.png')
     
             canvas_vel.draw_idle()
     
@@ -440,7 +533,7 @@ class PDV :
         #print("Cliquez sur le spectrogramme pour sélectionner des points.")
     
     def NotebookGraphSpectrogram(self, parent):
-        fig, axs = plt.subplots(1, 2, sharex=False, sharey=False, figsize=(8, 6))
+        fig, axs = plt.subplots(1, 2, sharex=False, sharey=False, figsize=(6, 4))
         canvas = FigureCanvasTkAgg(fig, master=parent)
         canvas.get_tk_widget().pack(fill=tk.BOTH, expand=1)
         self.toolbar = NavigationToolbar2Tk(canvas, parent)
@@ -462,7 +555,7 @@ class PDV :
         axs[1].grid()
     
         fig.tight_layout()
-        fig.savefig('RawData.png')
+        fig.savefig(self.FName+'RawData.png')
         for fig_num in plt.get_fignums():
             plt.close(fig_num)
         canvas.draw_idle()
@@ -471,7 +564,29 @@ class PDV :
     def runSTFTPDVInteractive(self):
         self.root.mainloop()    
       
+    def PDVParameters(self):
+        try:
+            freq_ghz = float(self.ChainResponse_var.get())
+            wavelength_nm = float(self.LambdaLaser_var.get())
+            Shift_nm=float(self.Shift_var.get())
+        except ValueError:
+            print("Value error - check")
+            return
+        
+        # SI Unit : GHz -> Hz, nm -> m
+        freq_hz = freq_ghz
+        wavelength_m = wavelength_nm
+        Shift_nm=Shift_nm
 
+        # Velocity calculation : v = f × λ / 2
+        max_velocity = freq_hz * wavelength_nm / 2
+        VPivot=Shift_nm*wavelength_nm/2
+        self.MaxVelocityForChainResponse=max_velocity
+        self.VPivot=VPivot
+        self.MaxVelocityForChainResponse_var.set(f"{max_velocity:.2f}")
+        self.VPivot_var.set(f"{self.VPivot:.2f}")
+        
+      
     def PDVReport(self): #Pdf report of shot
         
         print ("ReportVH pdf "+self.ShotNumber+' '+self. FName)

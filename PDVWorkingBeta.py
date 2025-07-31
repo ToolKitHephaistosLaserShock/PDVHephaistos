@@ -38,8 +38,7 @@ from PDVExtractSignalAndAnalysisBetaTest import *
 
 C=3e8 #m/s
 
-
-## Input PDV parameters 
+## Initial Input PDV parameters 
 LambdaLaser=1550 #nm
 LambdaReference=1550 #nm
 #PDV Shift
@@ -47,7 +46,6 @@ PDVShift=1#GHz
 
 # Reponse chain
 ChainResponse=1#Ghz
-
 nperseg =2000 # FFT glissante
 
 #File Name
@@ -55,18 +53,10 @@ FName = "ShotTest"
 ShotNumber='ShotTest' #Directory Shot
 
 #SI
-LambdaLaser=LambdaLaser*1e-9
+LambdaLaser=LambdaLaser
 FrLaser= C/LambdaLaser
-LambdaReference=LambdaReference*1e-9
+LambdaReference=LambdaReference
 FrReference= C/LambdaReference
-print("Lambda Laser : (m)     :",f"{LambdaLaser}")
-print("FrLaser : (Hz)         :",f"{FrLaser:e}")
-print("Lambda Reference : (m) :",f"{LambdaReference}")
-print("FrReference : (Hz)     :",f"{FrReference:e}")
-PDVFactor=LambdaLaser/2
-print("PDVFactor (m)          :",f"{PDVFactor:e}")
-
-
 
 #Extraction from .trc generate .csv datas set (Scope signal from lecroy)
 #trc=Trc()
@@ -75,41 +65,10 @@ print("PDVFactor (m)          :",f"{PDVFactor:e}")
 #print ("Number of points :",trc.ScopeStatus["WAVE_ARRAY_COUNT"])
 
 #Open class for ShotNumber
-ShotNumber=PDV(ChainResponse,PDVShift,PDVFactor,FName,ShotNumber,nperseg)
+ShotNumber=PDV(LambdaLaser,ChainResponse,PDVShift,FName,ShotNumber,nperseg)
 ShotNumber.NotebookGraph()
 ShotNumber.runSTFTPDVInteractive()
 
-###Directory Shots
-#print ("##Goto directory ShotNUmber")
-#WorkDirectory=ShotNumber
-#print('Ask WorkDirectory : ',WorkDirectory)
-#print('Current Directory before change : ', os.getcwd())
-#os.chdir(WorkDirectory)
-#print('Current Directory : ', os.getcwd())
-
-#### Basic analysis > in report
-
-##ShotNumber.DataLoad(1)
-#calculate Acquision time scale
-#ShotNumber.PDVSetFrAcquisition()
-#FFT                 
-#ShotNumber.SetPDVFFT()
-# Calculate STFT
-#ShotNumber.SetSTFTPDV(nperseg)
-#Calculate velocity
-#ShotNumber.SetVelocity()
-#graph spectrogram & velocty
-#ShotNumber.GraphSpectrogram()
-#ShotNumber.WindowDatas()
-#ShotNumber.CreateSTFTPDVInteractive()
-#ShotNumber.runSTFTPDVInteractive()
-#ShotNumber.CreateSTFTPDVInteractive ()
-#ShotNumber.runSTFTPDVInteractive()
-#Extraction manualy point point point
-#ShotNumber.ExtractVelocityProfile(ShotNumber.Time_stft,ShotNumber.Velocity,ShotNumber.PDVSpectrogram)
-#ShotNumber.ExtractVelocityProfileGraphSave()
-#ShotNumber.FrequenceDominant(1,ShotNumber.PolygonTime,ShotNumber.PolygonVelocity,ShotNumber.PolygonPDVSpectrogram)
-#ShotNumber.FillBetweenVelocityProfile(20,20)
 #ShotNumber.PDVReport()
 
 
