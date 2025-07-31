@@ -12,24 +12,23 @@ Français. ⟨NNT : 2014ENAM0044⟩. ⟨tel-01165754⟩
 
 https://pastel.hal.science/tel-01165754
 
-
-Base signal for analysis :Tension(Time)
+Base signal for analysis :Tension(Time) .csv file
 
 class > PDV(Time,Tension,ChainResponse,PDVShift,PDVFactor,FName,ShotNumber)
-    -Raw data : Time Tension
-    -Chains response (GHz)
-    -PDVShift 
-    -PDVFactor (m/s/Hz)
-    -FName - File name of raw datas   
-    -ShotNumber - Files directory
+    - Raw data : Time Tension
+    - Chains response (GHz)
+    - PDVShift 
+    - PDVFactor (m/s/Hz)
+    - FName - File name of raw datas   
+    - ShotNumber - Files directory
 *************************************************************
 Directory Structure : 
 Working directory
-    -PDVWorking.ipynb
-    --ShotNumberDirectory
-        -RawDatas
-        -Graphs 
-        -Report
+    - PDVWorking.ipynb
+    -- ShotNumberDirectory
+        - RawDatas
+        - Graphs 
+        - Report
 ******************************
 
 def DataLoad(self,LinesSuppressed) load data from .csv file Tension(Time). 
@@ -44,16 +43,18 @@ def SetVelocity(s%matplotlib inlineelf) - calculate velocity m/ss
 
 def PDVReport(self) - pdf report with all datas and graph for basic analysis, datas, FFFT, Spectrogram,baseline.  
 
-**Working on Cond env with  :** 
-    -matplotlib
-    -numpy
-    -pyqt
-    -pyqtwebengine
-    -python 3.11
-    -scipy
-    -spyder
-    -tk
-    -pandas
-    -reportlab
+**Working on Cond env with  :**
+
+    - matplotlib
+    - numpy
+    - pyqt
+    - pyqtwebengine
+    - python 3.11
+    - scipy
+    - spyder
+    - tk
+    - pandas
+    - reportlab
+    
 **ShotTest.zip contains an example to be tested**
 
