@@ -239,11 +239,7 @@ class PDV :
         frame_file.pack()
         tk.Entry(frame_file, textvariable=self.fname, width=50).pack(side=tk.LEFT, padx=5)
         tk.Button(frame_file, text="Select File ", command=self.select_file).pack(side=tk.LEFT)
-    
-        # nperseg
-        ttk.Label(parent, text="Initial nperseg (FFT window size in number of point) :").pack(pady=5)
-        tk.Entry(parent, textvariable=self.nperseg_var).pack()
-        
+       
         # Launch analysis
         ttk.Label(parent, text="Spectrogram, Raw datas and velocity figures are saved in png format ").pack(pady=15)
         ttk.Label(parent, text="Velocity data set in .csv file in ShotNumber Directory").pack(pady=5)
@@ -402,13 +398,13 @@ class PDV :
         self.toolbar.update()
         self.toolbar.pack(side=tk.TOP, fill=tk.X)
     
-        self.label1 = tk.Label(parent, text=f"STFT Window (nperseg) = {self.param} pt , {self.WindowsSize*1e9:.3f} ns, Window: {self.STFTPDVWindow}")
+        self.label1 = tk.Label(parent, text=f"STFT Window (nperseg) : {self.param} pt , {self.WindowsSize*1e9:.3f} ns, Window : {self.STFTPDVWindow}")
         self.label1.pack()
         
-        self.label2 = tk.Label(parent, text=f"Number of points: {len(self.Time)} pt, FAcquisition (GS/s): {self.FAcquisiton*1e-9:e}")
+        self.label2 = tk.Label(parent, text=f"Number of points : {len(self.Time)} pt, FAcquisition (GS/s): {self.FAcquisiton*1e-9:e}")
         self.label2.pack()
             
-        self.ax.set_title("Spectrogram")
+        self.ax.set_title("Spectrogram + self.FName")
         self.ax.set_xlabel("Time (s)")
         self.ax.set_ylabel("Frequency (Hz)")
     
@@ -436,7 +432,7 @@ class PDV :
         # Affichage initial
         self.quadmesh = self.ax.pcolormesh(self.Time_stft, self.FePDV, np.abs(self.PDVSpectrogram), shading='gouraud')
         self.ax.set_ylim(min(self.FePDV), max(self.FePDV))
-        self.ax.set_title("Spectrogram")
+        self.ax.set_title("Spectrogram " + self.FName)
         for fig_num in plt.get_fignums():
             plt.close(fig_num)
         self.canvas.draw_idle()
@@ -454,7 +450,7 @@ class PDV :
         )
         
         self.label2.config(
-            text=f"Number of points{len(self.Time)} pt, FAcquisition (GS/s): {self.FAcquisiton*1e-9:e}"
+            text=f"Number of points : {len(self.Time)} pt, FAcquisition (GS/s): {self.FAcquisiton*1e-9:e}"
         )
     
         xlim = self.ax.get_xlim()
@@ -476,9 +472,10 @@ class PDV :
     
         self.ax.set_xlabel("Time (s)")
         self.ax.set_ylabel("Frequency (Hz)")
-        self.ax.set_title("Spectrogram")
+        self.ax.set_title("Spectrogram " + self.FName)
         self.ax.set_xlim(xlim)
         self.ax.set_ylim(ylim)
+        #print ('Save spectrogram '+self.FName+"spectrogram.png")
         self.fig.savefig(self.FName+'Spectrogram.png')
         # Mettre à jour la figure dans Tkinter
         self.canvas.draw_idle()
@@ -515,7 +512,7 @@ class PDV :
             for fig_num in plt.get_fignums():
                 plt.close(fig_num)
     
-            ax_vel.set_title("Velocity profile")
+            ax_vel.set_title("Velocity profile " + self.FName)
             ax_vel.set_xlabel("Temps (s)")
             ax_vel.set_ylabel("Velocity (m/s)")
             ax_vel.grid(True)
@@ -523,10 +520,11 @@ class PDV :
             # Tracer les points extraits
             if self.VelocityProfile:
                 x, y = zip(*self.VelocityProfile)
-                ax_vel.plot(x, y, 'rx-', label="Velocityprofile Shot "+ self.FName)
+                ax_vel.plot(x, y, 'rx-')
                 ax_vel.legend()
                 print ('Save velocity profile in '+self.FName+"VelocityProfile.csv")
                 np.savetxt(self.FName+"VelocityProfile.csv", np.vstack((x ,y)).T, delimiter=',')
+                print ('Save velocity plat in '+self.FName+"VelocityProfile.png")
                 fig_vel.savefig(self.FName+'Velocity.png')
     
             canvas_vel.draw_idle()
@@ -563,6 +561,7 @@ class PDV :
         axs[1].grid()
     
         fig.tight_layout()
+        print ('Save Raw Data'+self.FName+'RawData.png')
         fig.savefig(self.FName+'RawData.png')
         for fig_num in plt.get_fignums():
             plt.close(fig_num)

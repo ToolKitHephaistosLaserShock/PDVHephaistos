@@ -46,7 +46,7 @@ PDVShift=1#GHz
 
 # Reponse chain
 ChainResponse=1#Ghz
-nperseg =2000 # FFT glissante
+nperseg =500 # FFT glissante
 
 #File Name
 FName = "ShotTest"
