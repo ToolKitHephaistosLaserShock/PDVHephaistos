@@ -402,9 +402,12 @@ class PDV :
         self.toolbar.update()
         self.toolbar.pack(side=tk.TOP, fill=tk.X)
     
-        self.label = tk.Label(parent, text=f" STFT Window (nperseg) = {self.param} pt , {self.WindowsSize*1e9:.3f} ns")
-        self.label.pack()
-    
+        self.label1 = tk.Label(parent, text=f"STFT Window (nperseg) = {self.param} pt , {self.WindowsSize*1e9:.3f} ns, Window: {self.STFTPDVWindow}")
+        self.label1.pack()
+        
+        self.label2 = tk.Label(parent, text=f"Number of points: {len(self.Time)} pt, FAcquisition (GS/s): {self.FAcquisiton*1e-9:e}")
+        self.label2.pack()
+            
         self.ax.set_title("Spectrogram")
         self.ax.set_xlabel("Time (s)")
         self.ax.set_ylabel("Frequency (Hz)")
@@ -445,8 +448,13 @@ class PDV :
         self.STFTPDVWindow = window
         self.param = int(val)
         self.nperseg=self.param
-        self.label.config(
+        
+        self.label1.config(
             text=f"STFT Window (nperseg) = {self.param} pt, {self.WindowsSize*1e9:.3f} ns, Window: {self.STFTPDVWindow}"
+        )
+        
+        self.label2.config(
+            text=f"Number of points{len(self.Time)} pt, FAcquisition (GS/s): {self.FAcquisiton*1e-9:e}"
         )
     
         xlim = self.ax.get_xlim()
