@@ -36,7 +36,7 @@ Base signal for analysis :Tension(Time) .csv file
         - ShotNumber.csvRawDatas.png # RawDatas plot image .png
         - ShotNumber.csvSpectrogram.png # Last calculation for Spectrogram plot image .png
 ******************************
-**Main function**
+**Main functions**
 
     - def DataLoad(self,LinesSuppressed) load data from .csv file Tension(Time). 
        
