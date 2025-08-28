@@ -87,6 +87,8 @@ def SetVelocity(s%matplotlib inlineelf) - calculate velocity m/s
 def PDVReport(self) - pdf report with all datas and graph for basic analysis, datas, FFFT, Spectrogram, baseline.  
 """
 
+OngOp = 0   # Variable globale memoire pour l'onglet du profil de vitesse extrait automatiquement
+
 class RedirectConsole:
     def __init__(self, text_widget):
         self.output = text_widget
@@ -391,7 +393,8 @@ class PDV :
     def CreateSTFTPDVInteractive(self, parent):
         self.param = self.nperseg
     
-        self.fig, self.ax = plt.subplots(figsize=(6, 4))
+        # self.fig, self.ax = plt.subplots(figsize=(6, 4))
+        self.fig, self.ax = plt.subplots(figsize=(4, 2))
         self.canvas = FigureCanvasTkAgg(self.fig, master=parent)
         self.canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
         self.toolbar = NavigationToolbar2Tk(self.canvas, parent)
@@ -425,6 +428,62 @@ class PDV :
     
         self.Velocity_button = tk.Button(parent, text="ExtractVelocity", command=self.ExtractVelocityNotebook)
         self.Velocity_button.pack(pady=10)
+        
+    # # Frame contenant la ligne complète
+    # line_frame = ttk.Frame(parent)
+    # line_frame.pack(anchor="w", pady=5)
+    
+    # # Bloc 1 : Chain Response
+    # chain_frame = ttk.Frame(line_frame)
+    # chain_frame.pack(side=tk.LEFT, padx=10)
+    # ttk.Label(chain_frame, text="Chain Response (Ghz) :").pack(anchor="w")
+    # tk.Entry(chain_frame, textvariable=self.ChainResponse_var, width=15).pack()
+    
+    # # Bloc 1 : Max Velocity
+    # velocity_frame = ttk.Frame(line_frame)
+    # velocity_frame.pack(side=tk.LEFT, padx=10)
+    # ttk.Label(velocity_frame, text="Max Velocity (m/s)").pack(anchor="w")
+    # tk.Entry(velocity_frame, text=self.MaxVelocityForChainResponse_var, width=15).pack()
+    
+        # # Ajout interface graphique extraction automatique AAA
+        # self.AutoVelExtract_frame = ttk.Frame(parent)    # Définit une boîte (un rectangle) dans lequel on placera tous les éléments graphiques en lien avec l'extraction automatique du profil de vitesse
+        # self.AutoVelExtract_frame.pack(anchor="w", pady=5)                # On le positionne à la suite du reste à gauche (w = west) avec une marge/un espace de 5 vis-à-vis des éléments du dessus et du dessous
+        
+        # self.MinFreqAutoVelExtract_frame = ttk.Frame(self.AutoVelExtract_frame)    # Determine à l'intérerieur de la première boîte un "sous-rectangle" pour la prise de le fréquence minimale
+        # self.MinFreqAutoVelExtract_frame.pack(side=tk.LEFT, padx=10)                                # On le place vers la gauche avec une certaine marge extérieure à gauche et droite 
+        # ttk.Label(self.MinFreqAutoVelExtract_frame, text="MinFrequency").pack(anchor="w")           # On intègre dans cette sous-boîte une zone de texte
+        # self.EntMinFreq = tk.Entry(self.MinFreqAutoVelExtract_frame, text="b", width=15)
+        # self.EntMinFreq.pack()                       # On intègre dans cette sous-boîte une zone de saisie
+        
+        # self.MaxFreqAutoVelExtract_frame = ttk.Frame(self.AutoVelExtract_frame) # Identique mais pour la fréquence maximale
+        # self.MaxFreqAutoVelExtract_frame.pack(side=tk.LEFT, padx=10)
+        # ttk.Label(self.MaxFreqAutoVelExtract_frame, text="MaxFrequency").pack(anchor="w")
+        # self.EntMaxFreq = tk.Entry(self.MaxFreqAutoVelExtract_frame, text="a", width=15)
+        # self.EntMaxFreq.pack()
+        
+        # self.AutoVelocity_button = tk.Button(self.AutoVelExtract_frame, text="AutoVelExtrac", command=self.ExtractVelocityNotebookAuto) #Bouton pour lancer l'extraction automatique
+        # self.AutoVelocity_button.pack(pady=10)
+        
+        # Ajout interface graphique extraction automatique AAA
+        AutoVelExtract_frame = ttk.Frame(parent)    # Définit une boîte (un rectangle) dans lequel on placera tous les éléments graphiques en lien avec l'extraction automatique du profil de vitesse
+        AutoVelExtract_frame.pack(anchor="w", pady=5)                # On le positionne à la suite du reste à gauche (w = west) avec une marge/un espace de 5 vis-à-vis des éléments du dessus et du dessous
+        
+        MinFreqAutoVelExtract_frame = ttk.Frame(AutoVelExtract_frame)    # Determine à l'intérerieur de la première boîte un "sous-rectangle" pour la prise de le fréquence minimale
+        MinFreqAutoVelExtract_frame.pack(side=tk.LEFT, padx=10)                                # On le place vers la gauche avec une certaine marge extérieure à gauche et droite 
+        ttk.Label(MinFreqAutoVelExtract_frame, text="MinFrequency").pack(anchor="w")           # On intègre dans cette sous-boîte une zone de texte
+        self.EntMinFreq = tk.Entry(MinFreqAutoVelExtract_frame, text="b", width=15)
+        self.EntMinFreq.pack()                       # On intègre dans cette sous-boîte une zone de saisie
+        
+        MaxFreqAutoVelExtract_frame = ttk.Frame(AutoVelExtract_frame) # Identique mais pour la fréquence maximale
+        MaxFreqAutoVelExtract_frame.pack(side=tk.LEFT, padx=10)
+        ttk.Label(MaxFreqAutoVelExtract_frame, text="MaxFrequency").pack(anchor="w")
+        self.EntMaxFreq = tk.Entry(MaxFreqAutoVelExtract_frame, text="a", width=15)
+        self.EntMaxFreq.pack()
+        
+        AutoVelocity_button = tk.Button(AutoVelExtract_frame, text="AutoVelExtrac", command=self.ExtractVelocityNotebookAuto) #Bouton pour lancer l'extraction automatique
+        AutoVelocity_button.pack(pady=10)
+    
+    ###
     
         # Calcul initial
         self.SetSTFTPDV(self.param)
@@ -537,6 +596,76 @@ class PDV :
         self.stop_button.pack(pady=10)
     
         #print("Cliquez sur le spectrogramme pour sélectionner des points.")
+    
+    def ExtractVelocityNotebookAuto(self): #AAA
+        global OngOp
+        Fmin = self.EntMinFreq.get()
+        Fmax = self.EntMaxFreq.get()
+        
+        Ind_Fmin = np.argmin(np.abs(self.FePDV - float(Fmin)*1e9))
+        Ind_Fmax = np.argmin(np.abs(self.FePDV - float(Fmax)*1e9))
+        
+        self.PDVSpectrogram_cut = self.PDVSpectrogram[Ind_Fmin:Ind_Fmax, :]
+        Ind_FMaxT = np.argmax(np.abs(self.PDVSpectrogram_cut), axis=0)
+        self.Prof_FMax = self.FePDV[Ind_Fmin + Ind_FMaxT]
+        
+        Bound_Prof = 0.5
+        Bound_v_Inf = []
+        Bound_v_Sup = []
+        
+        for k in range(len(self.Time_stft)):
+            Mat_PDVSpec_Cut_Norm = np.abs(self.PDVSpectrogram_cut[:, k])/np.max(np.abs(self.PDVSpectrogram_cut[:, k]))
+            
+            Mat_PDVSpec_Cut_Inf = Mat_PDVSpec_Cut_Norm[:Ind_FMaxT[k]]
+            Sign_PDVSpec_Cut_Inf = np.sign(np.abs(Mat_PDVSpec_Cut_Inf) - Bound_Prof)            
+            Zero_PDVSpec_Cut_Inf = np.nonzero(Sign_PDVSpec_Cut_Inf - 1)
+            if sum(Zero_PDVSpec_Cut_Inf) == 0:
+                LstZero_PDVSpec_Cut_Inf = 0
+            else:
+                LstZero_PDVSpec_Cut_Inf = np.max(Zero_PDVSpec_Cut_Inf)
+            Bound_v_Inf.append(self.FePDV[Ind_Fmin+LstZero_PDVSpec_Cut_Inf])
+            
+            Mat_PDVSpec_Cut_Sup = Mat_PDVSpec_Cut_Norm[Ind_FMaxT[k]:]
+            Sign_PDVSpec_Cut_Sup = np.sign(np.abs(Mat_PDVSpec_Cut_Sup) - Bound_Prof)
+            Zero_PDVSpec_Cut_Sup = np.nonzero(Sign_PDVSpec_Cut_Sup - 1)
+            if sum(Zero_PDVSpec_Cut_Sup) == 0:
+                FstZero_PDVSpec_Cut_Sup = 0
+            else:
+                FstZero_PDVSpec_Cut_Sup = np.min(Zero_PDVSpec_Cut_Sup)
+            Bound_v_Sup.append(self.FePDV[Ind_Fmin+FstZero_PDVSpec_Cut_Sup+Ind_FMaxT[k]])
+        
+        
+        # Gestion de l'onglet d'affichage du profil de vitesse extrait
+        if OngOp != 0:                          # Verifie dans la variable memoire si cet onglet a deja ete ouvert dans cette session
+            self.notebook.forget(OngOp)         # Si oui, on le ferme
+        
+        self.frame_FreqProf = ttk.Frame(self.notebook)                  # Creation onglet
+        self.notebook.add(self.frame_FreqProf, text="Freq Profile")     # Ajoute l'onglet cree
+        self.notebook.select(self.frame_FreqProf)                       # Selectionne l'onglet nouvellement cree
+        
+        OngOp = str(self.frame_FreqProf)        # Enregistre dans la variable memoire le nouveau "nom" de l'onglet
+        
+        # Figure vide
+        fig_velR, ax_velR = plt.subplots(figsize=(6, 4))
+        canvas_velR = FigureCanvasTkAgg(fig_velR, master=self.frame_FreqProf)
+        canvas_velR.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
+        toolbarR = NavigationToolbar2Tk(canvas_velR, self.frame_FreqProf)
+        toolbarR.update()
+        toolbarR.pack(side=tk.TOP, fill=tk.X)
+        for fig_num in plt.get_fignums():
+            plt.close(fig_num)
+        
+        ax_velR.set_title("Velocity profile R " + self.FName)
+        ax_velR.set_xlabel("Time (s)")
+        ax_velR.set_ylabel("Velocity (m/s)")
+        ax_velR.grid(True)
+        
+        ax_velR.plot(self.Time_stft, self.Prof_FMax*self.PDVFactor, 'rx-')
+        ax_velR.plot(self.Time_stft, np.asarray(Bound_v_Inf)*self.PDVFactor, 'b--')
+        ax_velR.plot(self.Time_stft, np.asarray(Bound_v_Sup)*self.PDVFactor, 'b--')
+        #ax_velR.legend()
+    
+        canvas_velR.draw_idle()
     
     def NotebookGraphSpectrogram(self, parent):
         fig, axs = plt.subplots(1, 2, sharex=False, sharey=False, figsize=(6, 4))
