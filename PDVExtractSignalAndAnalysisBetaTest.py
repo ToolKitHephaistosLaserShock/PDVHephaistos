@@ -87,6 +87,8 @@ def SetVelocity(s%matplotlib inlineelf) - calculate velocity m/s
 def PDVReport(self) - pdf report with all datas and graph for basic analysis, datas, FFFT, Spectrogram, baseline.  
 """
 
+OngOp = 0   # Variable globale memoire pour l'onglet du profil de vitesse extrait automatiquement
+
 class RedirectConsole:
     def __init__(self, text_widget):
         self.output = text_widget
@@ -596,6 +598,7 @@ class PDV :
         #print("Cliquez sur le spectrogramme pour sélectionner des points.")
     
     def ExtractVelocityNotebookAuto(self): #AAA
+        global OngOp
         Fmin = self.EntMinFreq.get()
         Fmax = self.EntMaxFreq.get()
         
@@ -632,13 +635,17 @@ class PDV :
             Bound_v_Sup.append(self.FePDV[Ind_Fmin+FstZero_PDVSpec_Cut_Sup+Ind_FMaxT[k]])
         
         
-        ##### a = 2
-        # === Créer un nouvel onglet pour afficher les points ===
-        self.frame_FreqProf = ttk.Frame(self.notebook)
-        self.notebook.add(self.frame_FreqProf, text="Freq Profile")
-        self.notebook.select(self.frame_FreqProf)
+        # Gestion de l'onglet d'affichage du profil de vitesse extrait
+        if OngOp != 0:                          # Verifie dans la variable memoire si cet onglet a deja ete ouvert dans cette session
+            self.notebook.forget(OngOp)         # Si oui, on le ferme
         
-        # Figure vide pour affichage des points extraits
+        self.frame_FreqProf = ttk.Frame(self.notebook)                  # Creation onglet
+        self.notebook.add(self.frame_FreqProf, text="Freq Profile")     # Ajoute l'onglet cree
+        self.notebook.select(self.frame_FreqProf)                       # Selectionne l'onglet nouvellement cree
+        
+        OngOp = str(self.frame_FreqProf)        # Enregistre dans la variable memoire le nouveau "nom" de l'onglet
+        
+        # Figure vide
         fig_velR, ax_velR = plt.subplots(figsize=(6, 4))
         canvas_velR = FigureCanvasTkAgg(fig_velR, master=self.frame_FreqProf)
         canvas_velR.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
@@ -656,11 +663,9 @@ class PDV :
         ax_velR.plot(self.Time_stft, self.Prof_FMax*self.PDVFactor, 'rx-')
         ax_velR.plot(self.Time_stft, np.asarray(Bound_v_Inf)*self.PDVFactor, 'b--')
         ax_velR.plot(self.Time_stft, np.asarray(Bound_v_Sup)*self.PDVFactor, 'b--')
-        ax_velR.legend()
+        #ax_velR.legend()
     
         canvas_velR.draw_idle()
-        #####
-    
     
     def NotebookGraphSpectrogram(self, parent):
         fig, axs = plt.subplots(1, 2, sharex=False, sharey=False, figsize=(6, 4))
