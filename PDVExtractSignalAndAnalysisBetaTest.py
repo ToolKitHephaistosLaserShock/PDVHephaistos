@@ -22,7 +22,6 @@ from matplotlib.backends.backend_tkagg import NavigationToolbar2Tk
 from PyQt5.QtWidgets import QApplication, QMainWindow, QSlider, QLabel, QVBoxLayout, QWidget
 from PyQt5.QtCore import Qt
 
-import csv
 from pylab import *
 import csv
 import pandas as pd
