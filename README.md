@@ -14,7 +14,7 @@ Français. ⟨NNT : 2014ENAM0044⟩. ⟨tel-01165754⟩
 
 https://pastel.hal.science/tel-01165754
 
-Base signal for analysis :Tension(Time) .csv file
+Base signal for analysis by STFT and Wavelet:Tension(Time) .csv file
 
 **class > PDV(Time,Tension,ChainResponse,PDVShift,PDVFactor,FName,ShotNumber)**
 
@@ -47,6 +47,8 @@ Base signal for analysis :Tension(Time) .csv file
     - def SetPDVFFT(self) - calculate FFT of raw datas :  Tension and related Time
 
     - def SetSTFTPDV(self,nperseg) - Calculate STFT from raw data on number of point - nperseg
+
+    -- def SetWavelet(self,WidthWavelet) - Calculate Wavelet from raw data on number of point - nperseg and function (Morelet MexHat)
 
     - def SetVelocity() - calculate velocity m/ss
 
