@@ -34,7 +34,9 @@ def SetSTFTPDV(self,nperseg) - Calculate STFT from raw data on number of point -
 def SetVelocity(s%matplotlib inlineelf) - calculate velocity m/ss
 def PDVReport(self) - pdf report with all datas and graph for basic analysis, datas, FFFT, Spectrogram, baseline.  
 """
-from PDVExtractSignalAndAnalysisWavelet import *
+#from PDVExtractSignalAndAnalysisWavelet import *
+from PDVExtractSignalAndAnalysisBetaTest import *
+
 
 C=3e8 #m/s
 
