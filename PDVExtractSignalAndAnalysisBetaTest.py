@@ -1000,7 +1000,15 @@ class PDV :
     
     
     def runSTFTPDVInteractive(self):
-        self.root.state("zoomed")
+        # Check if the OS is Windows
+        if os.name == 'nt':
+            self.root.state("zoomed")
+        else:
+                # For Unix-like systems, use `_NET_WM_STATE_MAXIMIZED_VERT` and `_NET_WM_STATE_MAXIMIZED_HORZ`
+                # and configure the window to be maximized.
+           self.root.attributes('-zoomed', True)
+        
+        
         self.root.mainloop()
       
     def PDVParameters(self):
