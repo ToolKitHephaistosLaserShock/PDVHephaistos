@@ -77,13 +77,17 @@ def PDVReport(self) - pdf report with all datas and graph for basic analysis, da
 """
 
 class RedirectConsole:
+    
     def __init__(self, text_widget):
         self.output = text_widget
+        
     def write(self, string):
         self.output.insert(tk.END, string)
         self.output.see(tk.END)
+        
     def flush(self):
         pass
+    
 
 class PDV :
     def __init__(self,LambdaLaser,ChainResponse,Shift,FName,ShotNumber,nperseg,WidthWavelet):
@@ -307,7 +311,6 @@ class PDV :
         
         ttk.Button(parent, text="Exit", style='TButton', command=lambda: os._exit(0)).pack(pady=5)
 
-    
     def select_directory(self):
         dirname = fd.askdirectory(title="Select Shot Directory")
         if dirname:
@@ -321,12 +324,12 @@ class PDV :
             self.selected_file_fullpath = filename  # Full path if mandatory later
             
         
-    def write(self, string):
-        self.output.insert(tk.END, string)
-        self.output.see(tk.END)  # scroll automatique à la fin
+    # def write(self, string):
+    #     self.output.insert(tk.END, string)
+    #     self.output.see(tk.END)  # scroll automatique à la fin
 
-    def flush(self):
-        pass
+    # def flush(self):
+    #     pass
     
     def CreateConsoleTab(self):
         self.frame_console = ttk.Frame(self.notebook)
@@ -427,16 +430,14 @@ class PDV :
         self.wx.set_title("Spectrogram " + self.FName)
         self.wx.set_xlabel("Time (s)")
         self.wx.set_ylabel("Frequency (Hz)")
-    
-
-                
+        
         self.WaveletFunctionPDV_var = tk.StringVar(value=self.WaveletFunctionPDV)
         Functions = ['morl', 'mexh']
         ttk.Label(parent, text="Functions :").pack(anchor="w", padx=10, pady=(10, 0))
         combo = ttk.Combobox(parent, textvariable=self.WaveletFunctionPDV_var, values=Functions, state="readonly")
         combo.pack(anchor="w", padx=10, pady=5)
         combo.bind('<<ComboboxSelected>>', lambda e: self.update_WaveletDVInteractiveplot(self.width_entry.get()))
-
+        
         self.width_var = tk.StringVar(value=str(self.WidthWavelet))
         ttk.Label(parent, text="Wavelet width :").pack(anchor="w", padx=10, pady=(10, 0))
         self.width_entry = ttk.Entry(parent, textvariable=self.width_var, width=10)
@@ -585,7 +586,6 @@ class PDV :
         
     
     def CreateSTFTPDVInteractive(self, parent):
-        
         #Give value for initial slider
         self.param = self.nperseg
     
@@ -943,9 +943,10 @@ class PDV :
             self.notebook.select(self.frame_FreqProf)                    # Selectionne l'onglet nouvellement cree
             
             # Figure vide
-            fig_velR, ax_velR = plt.subplots(figsize=(3, 2))
+            fig_velR, ax_velR = plt.subplots(figsize=(6, 4))
             canvas_velR = FigureCanvasTkAgg(fig_velR, master=self.frame_FreqProf)
-            canvas_velR.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
+            # canvas_velR.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
+            canvas_velR.get_tk_widget().pack(side=tk.TOP, fill=None, expand=False)
             toolbarR = NavigationToolbar2Tk(canvas_velR, self.frame_FreqProf)
             toolbarR.update()
             toolbarR.pack(side=tk.TOP, fill=tk.X)
@@ -961,6 +962,9 @@ class PDV :
             ax_velR.plot(self.Time_stft[Ind_Tmin:Ind_Tmax], self.Prof_FMax*self.PDVFactor, 'r.-', label="Max velocity")
             ax_velR.legend()
             
+            fig_velR.savefig(self.FName + '_AutoProfVel.png', dpi='figure')
+            
+            fig_velR.set_size_inches(3, 2)
             canvas_velR.draw_idle()
 
     
