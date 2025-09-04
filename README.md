@@ -14,7 +14,7 @@ Français. ⟨NNT : 2014ENAM0044⟩. ⟨tel-01165754⟩
 
 https://pastel.hal.science/tel-01165754
 
-Base signal for analysis :Tension(Time) .csv file
+Base signal for analysis by STFT and Wavelet:Tension(Time) .csv file
 
 **class > PDV(Time,Tension,ChainResponse,PDVShift,PDVFactor,FName,ShotNumber)**
 
@@ -41,18 +41,35 @@ Base signal for analysis :Tension(Time) .csv file
 **Main functions**
 
     - def DataLoad(self,LinesSuppressed) load data from .csv file Tension(Time). 
-       
+      
     - def PDVSetFrAcquisition(self) - Extract sample rate in GS/s
 
-    - def SetPDVFFT(self) - calculate FFT of raw datas :  Tension and related Time
+    - def SetPDVFFT(self) - Calculate FFT of raw datas :  Tension and related Time
 
     - def SetSTFTPDV(self,nperseg) - Calculate STFT from raw data on number of point - nperseg
 
-    - def SetVelocity() - calculate velocity m/ss
+    - def SetWavelet(self,WidthWavelet) - Calculate Wavelet from raw data on number of point - nperseg and function (Morelet MexHat)
 
-    - def PDVReport() - pdf report with all datas and graph for basic analysis, datas, FFFT, Spectrogram,baseline.  
+    - def SetVelocity() - Calculate velocity m/ss
 
-**Working on Conda env with  :**
+    - def PDVReport() - Generate pdf report with all datas and graph for basic analysis, datas, FFFT, Spectrogram,baseline.  
+	
+	- def ExtractVelocityNotebookAuto() - Extrate velocity profile automatically, based on spectrum maximum
+	
+	- def BaseLineDelete() - Delete baseline
+
+**Automatic Velocity Profile Extraction :**
+
+	For each time, extract maximum frequency in the spectrogram at this time
+	
+**Automatic BaseLine Management :**
+
+	- Delete : extract spectrum at time previous any shock arrival, substract this spectrum at all time, ponderate by baseline ratio at each time
+	
+	- "Add" : Two Spectrogram variables exist. The first one is the spectrogram calculated while the second is the displayed spectrogram. First remains untouched. Calculations (such as deleting the baseline) are only made on the second. When "adding" the baseline, reload the calculated spectrogram as the displayed one. No calculations.
+
+
+**Working on Conda env with :**
 
     - matplotlib
     - numpy

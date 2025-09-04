@@ -34,7 +34,9 @@ def SetSTFTPDV(self,nperseg) - Calculate STFT from raw data on number of point -
 def SetVelocity(s%matplotlib inlineelf) - calculate velocity m/ss
 def PDVReport(self) - pdf report with all datas and graph for basic analysis, datas, FFFT, Spectrogram, baseline.  
 """
+#from PDVExtractSignalAndAnalysisWavelet import *
 from PDVExtractSignalAndAnalysisBetaTest import *
+
 
 C=3e8 #m/s
 
@@ -47,6 +49,7 @@ PDVShift=1#GHz
 # Reponse chain
 ChainResponse=1#Ghz
 nperseg =500 # FFT glissante
+WidthWavelet=100 #Wavelet
 
 #File Name
 FName = "ShotTest"
@@ -65,7 +68,7 @@ FrReference= C/LambdaReference
 #print ("Number of points :",trc.ScopeStatus["WAVE_ARRAY_COUNT"])
 
 #Open class for ShotNumber
-ShotNumber=PDV(LambdaLaser,ChainResponse,PDVShift,FName,ShotNumber,nperseg)
+ShotNumber=PDV(LambdaLaser,ChainResponse,PDVShift,FName,ShotNumber,nperseg,WidthWavelet)
 ShotNumber.NotebookGraph()
 ShotNumber.runSTFTPDVInteractive()
 
