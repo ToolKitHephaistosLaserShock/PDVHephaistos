@@ -72,6 +72,7 @@ Base signal for analysis by STFT and Wavelet:Tension(Time) .csv file
 
 **Working on Conda env with :**
 
+Conda install : 
     - matplotlib
     - numpy
     - pyqt
@@ -82,6 +83,7 @@ Base signal for analysis by STFT and Wavelet:Tension(Time) .csv file
     - tk
     - pandas
     - reportlab
+	- pywavelets
     
 **ShotTest.zip contains an example to be tested**
 
