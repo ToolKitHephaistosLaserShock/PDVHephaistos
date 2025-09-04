@@ -1,4 +1,5 @@
-# Free and easy tool for PDV simple analysis 
+# Free and easy tool for PDV simple analysis by SFTT & Wavelet 
+# Automatic & Manual Velocity extractions
 
 ![](https://github.com/ToolKitHephaistosLaserShock/PDVHephaistos/blob/main/DataLoad.png).
 
