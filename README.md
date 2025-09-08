@@ -63,8 +63,7 @@ Base signal for analysis by STFT and Wavelet:Tension(Time) .csv file
 	For each time, extract maximum frequency in the spectrogram at this time
 	
 **Automatic BaseLine Management :**
-
-![](https://github.com/ToolKitHephaistosLaserShock/PDVHephaistos/blob/main/Capture_BaseLine_Delete.png).
+![](https://github.com/ToolKitHephaistosLaserShock/PDVHephaistos/blob/c90a0e8b6aa25a6592d646e8c44c0f1792cc5357/Capture_BaseLine_Delete.png).
 
 	- Delete : extract spectrum at time previous any shock arrival, substract this spectrum at all time, ponderate by baseline ratio at each time
 	
