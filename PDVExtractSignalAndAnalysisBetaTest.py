@@ -268,7 +268,7 @@ class PDV :
         # LaserPDV Wavelength
         ttk.Label(parent, text="Laser PDV Wavelength (nm) :").pack(pady=10)
         tk.Entry(parent, textvariable=self.LambdaLaser_var, width=15).pack()
-                
+        
         # Line for tab
         line_frame = ttk.Frame(parent)
         line_frame.pack(anchor="w", pady=5)
@@ -301,8 +301,7 @@ class PDV :
         velocityPivot_frame.pack(side=tk.LEFT, padx=10)
         ttk.Label(velocityPivot_frame, text="Pivot Velocity (m/s)").pack(anchor="w")
         tk.Entry(velocityPivot_frame, text=self.VPivot_var, width=15).pack()
-               
-            
+        
         # PDV parameters lauch
         
         ttk.Button(parent, text="PDV Parameters Calculations", style='TButton',command=self.PDVParameters).pack(pady=10)
@@ -575,8 +574,8 @@ class PDV :
         self.Wcid = self.wcanvas.mpl_connect('button_press_event', onclick)
     
         # Ajouter un bouton pour arrêter
-        self.Wstop_button = tk.Button(self.root, text="End of Extraction", command=stop_recording)
-        self.Wstop_button.pack(pady=10)
+        ### self.Wstop_button = tk.Button(self.root, text="End of Extraction", command=stop_recording)
+        ### self.Wstop_button.pack(pady=10)
     
         #print("Cliquez sur le spectrogramme pour sélectionner des points.")
         
@@ -609,60 +608,87 @@ class PDV :
         self.STFTPDVWindow_var = tk.StringVar(value=self.STFTPDVWindow)
         fenetres = ['hann', 'hamming', 'blackman', 'bartlett', 'flattop']
 
-        ttk.Label(parent, text="Windows STFT :").pack(anchor="w", padx=10, pady=(5, 0))
-        combo = ttk.Combobox(parent, textvariable=self.STFTPDVWindow_var, values=fenetres, state="readonly")
-        combo.pack(anchor="w", padx=10, pady=5)
+        self.Frame_WindowTimeBase = ttk.Frame(parent)
+        self.Frame_WindowTimeBase.pack(anchor="w", pady=5, fill=tk.X)
+        self.Frame_WindowTimeBase.columnconfigure(2, weight=2)
+        
+        ttk.Label(self.Frame_WindowTimeBase, text="Windows STFT :").grid(row = 0, column = 0, sticky="w", padx=10,)
+        
+        combo = ttk.Combobox(self.Frame_WindowTimeBase, textvariable=self.STFTPDVWindow_var, values=fenetres, state="readonly")
+        combo.grid(row = 0, column = 1, sticky="w")
         combo.bind('<<ComboboxSelected>>', lambda e: self.update_STFTPDVInteractiveplot(self.slider.get()))
         
-        self.slider = ttk.Scale(parent, from_=2, to=2048, orient='horizontal')
+        self.slider = ttk.Scale(self.Frame_WindowTimeBase, from_=2, to=2048, orient='horizontal')
         self.slider.set(self.nperseg)
-        self.slider.pack(fill=tk.X, padx=15, pady=5)
-        
+        self.slider.grid(row=0, column=2, sticky="we", padx = 5)
         self.slider.configure(command=self.update_STFTPDVInteractiveplot)
         
-        self.Velocity_button = tk.Button(parent, text="STFTPExtractVelocity", command=self.ExtractVelocityNotebook)
-        self.Velocity_button.pack(pady=2)
+        ttk.Label(self.Frame_WindowTimeBase, text="Baseline management :").grid(row = 0, column = 3, sticky="w", padx=10,)
         
-        self.stop_button = tk.Button(parent, text="End of Extraction", command=self.donothing, bg="red")
-        self.stop_button.pack(pady=2)
+        self.BaseLineManag = tk.Button(self.Frame_WindowTimeBase, text="Delete", command = self.BaseLineDelete)
+        self.BaseLineManag.grid(row=0, column=4, sticky="we", padx = 5)
         
-        # Ajout interface graphique extraction automatique
-        AutoVelExtract_frame = ttk.Frame(parent)    # Définit une boîte (un rectangle) dans lequel on placera tous les éléments graphiques en lien avec l'extraction automatique du profil de vitesse
-        AutoVelExtract_frame.pack(anchor="w", pady=5)                # On le positionne à la suite du reste à gauche (w = west) avec une marge/un espace de 5 vis-à-vis des éléments du dessus et du dessous
+        ###
+        self.Frame_ManualExtractSTFT = ttk.Frame(parent)
+        self.Frame_ManualExtractSTFT.pack(anchor="w")
         
-        MinFreqAutoVelExtract_frame = ttk.Frame(AutoVelExtract_frame)    # Determine à l'intérerieur de la première boîte un "sous-rectangle" pour la prise de le fréquence minimale
-        MinFreqAutoVelExtract_frame.pack(side=tk.LEFT, padx=10)                                # On le place vers la gauche avec une certaine marge extérieure à gauche et droite 
+        self.LblTitle_ManualExtractSTFT = tk.Label(self.Frame_ManualExtractSTFT, text="Manual Velocity Extraction", font=("Arial", 14, "bold"))
+        self.LblTitle_ManualExtractSTFT.grid(row = 0, column = 0, sticky = "w")
+        
+        self.SepTitle_ManualExtractSTFT = ttk.Separator(self.Frame_ManualExtractSTFT, orient="horizontal")
+        self.SepTitle_ManualExtractSTFT.grid(row = 0, column = 1, columnspan=2, sticky="ew", ipadx=10)
+        
+        self.Instruction_ManualExtractSTFT = tk.Label(self.Frame_ManualExtractSTFT, text="Manually extract velocity by clicking on the spectrogram.")
+        self.Instruction_ManualExtractSTFT.grid(row = 1, column = 0, columnspan=2)
+        
+        self.Velocity_button = tk.Button(self.Frame_ManualExtractSTFT, text="Start Extraction", command=self.ExtractVelocityNotebook)
+        self.Velocity_button.grid(row = 1, column = 2, padx = 10)
+                
+        ###
+        self.AutoVelExtract_frame = ttk.Frame(parent)
+        self.AutoVelExtract_frame.pack(anchor="w", pady=5)
+        
+        self.LblTitle_AutoExtractSTFT = tk.Label(self.AutoVelExtract_frame, text="Automatic Velocity Extraction", font=("Arial", 14, "bold"))
+        self.LblTitle_AutoExtractSTFT.grid(row = 0, column = 0, sticky = "w")
+        
+        self.BtnHelp_AutoExtractSTFT = tk.Button(self.AutoVelExtract_frame, text="?", command=self.InterfaceHelpAutoVelExtr)
+        self.BtnHelp_AutoExtractSTFT.grid(row = 0, column = 1, pady = 2)
+                
+        self.SepTitle_AutoExtractSTFT = ttk.Separator(self.AutoVelExtract_frame, orient="horizontal")
+        self.SepTitle_AutoExtractSTFT.grid(row = 0, column = 2, columnspan=5, sticky="ew", ipadx=10)
+        
+        self.Instruction_AutoExtractSTFT = tk.Label(self.AutoVelExtract_frame, text="Automatic extraction in a defined window")
+        self.Instruction_AutoExtractSTFT.grid(row = 1, column = 0)
+        
+        MinFreqAutoVelExtract_frame = ttk.Frame(self.AutoVelExtract_frame)    # Determine à l'intérerieur de la première boîte un "sous-rectangle" pour la prise de le fréquence minimale
+        MinFreqAutoVelExtract_frame.grid(row = 1, column = 1, sticky = "w", padx=3)                               # On le place vers la gauche avec une certaine marge extérieure à gauche et droite 
         ttk.Label(MinFreqAutoVelExtract_frame, text="Min Freq (GHz)").pack(anchor="w")           # On intègre dans cette sous-boîte une zone de texte
         self.EntMinFreq = tk.Entry(MinFreqAutoVelExtract_frame, width=15)
-        self.EntMinFreq.pack()                       # On intègre dans cette sous-boîte une zone de saisie
+        self.EntMinFreq.pack()
         
-        MaxFreqAutoVelExtract_frame = ttk.Frame(AutoVelExtract_frame) # Identique mais pour la fréquence maximale
-        MaxFreqAutoVelExtract_frame.pack(side=tk.LEFT, padx=10)
+        MaxFreqAutoVelExtract_frame = ttk.Frame(self.AutoVelExtract_frame) # Identique mais pour la fréquence maximale
+        MaxFreqAutoVelExtract_frame.grid(row = 1, column =2, sticky = "w", padx=3)
         ttk.Label(MaxFreqAutoVelExtract_frame, text="Max Freq (GHz)").pack(anchor="w")
         self.EntMaxFreq = tk.Entry(MaxFreqAutoVelExtract_frame, width=15)
         self.EntMaxFreq.pack()
         
-        MinTimeAutoVelExtract_frame = ttk.Frame(AutoVelExtract_frame)    # Determine à l'intérerieur de la première boîte un "sous-rectangle" pour la prise de le fréquence minimale
-        MinTimeAutoVelExtract_frame.pack(side=tk.LEFT, padx=10)                                # On le place vers la gauche avec une certaine marge extérieure à gauche et droite 
+        MinTimeAutoVelExtract_frame = ttk.Frame(self.AutoVelExtract_frame)    # Determine à l'intérerieur de la première boîte un "sous-rectangle" pour la prise de le fréquence minimale
+        MinTimeAutoVelExtract_frame.grid(row = 1, column = 3, sticky = "w", padx=3)                                # On le place vers la gauche avec une certaine marge extérieure à gauche et droite 
         ttk.Label(MinTimeAutoVelExtract_frame, text="T min (µs)").pack(anchor="w")           # On intègre dans cette sous-boîte une zone de texte
         self.EntMinTime = tk.Entry(MinTimeAutoVelExtract_frame, width=15)
         self.EntMinTime.pack()                       # On intègre dans cette sous-boîte une zone de saisie
         
-        MaxTimeAutoVelExtract_frame = ttk.Frame(AutoVelExtract_frame) # Identique mais pour la fréquence maximale
-        MaxTimeAutoVelExtract_frame.pack(side=tk.LEFT, padx=10)
+        MaxTimeAutoVelExtract_frame = ttk.Frame(self.AutoVelExtract_frame) # Identique mais pour la fréquence maximale
+        MaxTimeAutoVelExtract_frame.grid(row = 1, column = 4, sticky = "w", padx=3)
         ttk.Label(MaxTimeAutoVelExtract_frame, text="T max (µs)").pack(anchor="w")
-        
         self.EntMaxTime = tk.Entry(MaxTimeAutoVelExtract_frame, width=15)
         self.EntMaxTime.pack()
         
-        AutoVelocity_button = tk.Button(AutoVelExtract_frame, text="AutoVelExtrac", command=self.ExtractVelocityNotebookAuto) #Bouton pour lancer l'extraction automatique
-        AutoVelocity_button.pack(side=tk.LEFT, pady=5)
+        AutoVelocity_button = tk.Button(self.AutoVelExtract_frame, text="Automic extraction", command=self.ExtractVelocityNotebookAuto) #Bouton pour lancer l'extraction automatique
+        AutoVelocity_button.grid(row = 1, column = 5, sticky = "w", padx=5, pady=5)
         
-        self.ErrorAutoVel_Lbl = ttk.Label(AutoVelExtract_frame, text="", foreground="red")
-        self.ErrorAutoVel_Lbl.pack(side=tk.LEFT, padx=10, pady=5)
-        
-        self.BaseLineManag = tk.Button(AutoVelExtract_frame, text="BaseLineDelete", command = self.BaseLineDelete)
-        self.BaseLineManag.pack()
+        self.ErrorAutoVel_Lbl = ttk.Label(self.AutoVelExtract_frame, text="", foreground="red")
+        self.ErrorAutoVel_Lbl.grid(row = 1, column = 6, sticky = "w", padx=5, pady=5)
         
         # Calcul initial
         self.SetSTFTPDV(self.nperseg)
@@ -686,7 +712,7 @@ class PDV :
         self.canvas.draw_idle()
         
     def BaseLineDelete(self):
-        self.BaseLineManag.configure(text="ResetBaseLine")
+        self.BaseLineManag.configure(text="Reset")
         self.BaseLineManag.configure(command=self.ResetBaseline)
         BaseLineFreq = np.argmax(self.PDVSpectrogram[:, 5])
         VecBaseLine = np.abs(self.PDVSpectrogram[:, 5])
@@ -698,13 +724,36 @@ class PDV :
         self.canvas.draw_idle()
         
     def ResetBaseline(self):
-        self.BaseLineManag.configure(text="BaseLineDelete")
+        self.BaseLineManag.configure(text="Delete")
         self.BaseLineManag.configure(command = self.BaseLineDelete)
         self.PDVSpectrogramActive = np.abs(self.PDVSpectrogram)
         self.quadmesh = self.ax.pcolormesh(self.Time_stft, self.FePDV, self.PDVSpectrogramActive, shading='gouraud')
         for fig_num in plt.get_fignums():
             plt.close(fig_num)
         self.canvas.draw_idle()
+    
+    def InterfaceHelpAutoVelExtr(self):
+        self.Inter_Help_AutoVelExtract = tk.Tk()
+        
+        self.LblTitle_Help_AutoVelExtract = tk.Label(self.Inter_Help_AutoVelExtract, text="Automatic Extraction Velocity", font=("Arial", 14, "bold"))
+        self.LblTitle_Help_AutoVelExtract.pack(anchor="w", pady=5)
+        
+        self.Lbl1_Help_AutoVelExtract = tk.Label(self.Inter_Help_AutoVelExtract, text="For each time step, extract frequency corresponding to the maximal amplitude.")
+        self.Lbl1_Help_AutoVelExtract.pack(anchor="w")
+        
+        self.Lbl2_Help_AutoVelExtract = tk.Label(self.Inter_Help_AutoVelExtract, text="Frequency interval has to be given.")
+        self.Lbl2_Help_AutoVelExtract.pack(anchor="w")
+        
+        self.Lbl3_Help_AutoVelExtract = tk.Label(self.Inter_Help_AutoVelExtract, text="Time window can be given. If not, extraction is done for the entire spectrogram.")
+        self.Lbl3_Help_AutoVelExtract.pack(anchor="w")
+        
+        self.Btn_QuitHelp_AutoVelExtract = tk.Button(self.Inter_Help_AutoVelExtract, text="Leave", command=lambda: self.Inter_Help_AutoVelExtract.destroy())
+        self.Btn_QuitHelp_AutoVelExtract.pack(anchor="w")
+        
+        self.Inter_Help_AutoVelExtract.mainloop()
+    
+    def LeaveHelp(self):
+        self.destroy()
     
     def update_STFTPDVInteractiveplot(self, val):
         
@@ -757,12 +806,9 @@ class PDV :
         # upate figures
         self.canvas.draw_idle()
     
+    # Fonction d'extraction manuelle du profil de vitesse
     def ExtractVelocityNotebook(self):
         self.VelocityProfile = []
-
-    
-        # Click on figure to load point
-
         
         # Fonction de clic dans le spectrogramme interactif
         def onclick(event):
@@ -776,12 +822,9 @@ class PDV :
         def stop_recording():
             self.canvas.mpl_disconnect(self.cid)
             print("Extraction is over")
-
-            # === create new tab for velocity plot
-
-            #print("Points extraits :", self.VelocityProfile)
-            self.stop_button.configure(command = self.donothing)
-            self.stop_button.configure(bg='red')
+            
+            self.Velocity_button.configure(text="Start extraction", command=self.ExtractVelocityNotebook)
+            
             # === Créer un nouvel onglet pour afficher les points ===
 
             self.frame_velocity = ttk.Frame(self.notebook)
@@ -814,12 +857,12 @@ class PDV :
                 fig_vel.savefig(self.FName+'Velocity.png')
     
             canvas_vel.draw_idle()
-    
+            
+            
+        self.Velocity_button.configure(text="Stop extraction", command=stop_recording)
+        
         # Connexion click
         self.cid = self.canvas.mpl_connect('button_press_event', onclick)
-        
-        self.stop_button.configure(command = stop_recording)    # Change la fonction associé au bouton terminant l'enregistrement : termine enregistrement au lieu de ne rien faire
-        self.stop_button.configure(bg='green')                  # Change la couleur du boutton terminant l'enregistrement pour signifier l'activation du bouton
         
     
     # Fonction d'extraction automatique du profil de vitesse
@@ -1007,8 +1050,6 @@ class PDV :
                 # For Unix-like systems, use `_NET_WM_STATE_MAXIMIZED_VERT` and `_NET_WM_STATE_MAXIMIZED_HORZ`
                 # and configure the window to be maximized.
            self.root.attributes('-zoomed', True)
-        
-        
         self.root.mainloop()
       
     def PDVParameters(self):
