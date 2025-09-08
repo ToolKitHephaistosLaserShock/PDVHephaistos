@@ -1,5 +1,4 @@
-# Free and easy tool for PDV simple analysis by SFTT & Wavelet 
-# Automatic & Manual Velocity extractions
+# Free and easy tool for PDV simple analysis 
 
 ![](https://github.com/ToolKitHephaistosLaserShock/PDVHephaistos/blob/main/DataLoad.png).
 
@@ -65,14 +64,15 @@ Base signal for analysis by STFT and Wavelet:Tension(Time) .csv file
 	
 **Automatic BaseLine Management :**
 
+![](https://github.com/ToolKitHephaistosLaserShock/PDVHephaistos/blob/main/Capture_BaseLine_Delete.png).
+
 	- Delete : extract spectrum at time previous any shock arrival, substract this spectrum at all time, ponderate by baseline ratio at each time
 	
-	- "Add" : Two Spectrogram variables exist. The first one is the spectrogram calculated while the second is the displayed spectrogram. First remains untouched. Calculations (such as deleting the baseline) are only made on the second. When "adding" the baseline, reload the calculated spectrogram as the displayed one. No calculations.
+	- Reset : Two Spectrogram variables exist. The first one is the spectrogram calculated while the second is the displayed spectrogram. First remains untouched. Calculations (such as deleting the baseline) are only made on the second. When "adding" the baseline, reload the calculated spectrogram as the displayed one. No calculations.
 
 
 **Working on Conda env with :**
 
-Conda install : 
     - matplotlib
     - numpy
     - pyqt
@@ -83,7 +83,6 @@ Conda install :
     - tk
     - pandas
     - reportlab
-	- pywavelets
     
 **ShotTest.zip contains an example to be tested**
 
