@@ -76,6 +76,7 @@ Base signal for analysis by STFT and Wavelet:Tension(Time) .csv file
     - matplotlib
     - numpy
     - pyqt
+	- PyWavelets
     - pyqtwebengine
     - python 3.11
     - scipy
