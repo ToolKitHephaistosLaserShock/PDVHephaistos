@@ -221,8 +221,6 @@ class PDV :
         sys.stdout = RedirectConsole(self.text_console)
         sys.stderr = RedirectConsole(self.text_console)
         
-
-    
         # Close all figures
 
         # Ferme toute figure matplotlib résiduelle
@@ -453,12 +451,12 @@ class PDV :
         #velocity extraction
         self.wVelocity_button = tk.Button(parent, text="WaveletExtractVelocity", command=self.ExtractWaveletVelocityNotebook)
         self.wVelocity_button.pack(pady=10)
-    
+        
         # Initial calculation
         self.SetWaveletTransformPDV(self.WidthWavelet)
         extent = [self.Time.min(), self.Time.max(),
               self.WaveletFrequencies.min(), self.WaveletFrequencies.max()]
-    
+        
         # Plot initial state
         plt.colorbar(self.wx.imshow(np.abs(self.WaveletSignalPDV),
                extent=extent,
@@ -617,34 +615,42 @@ class PDV :
         fenetres = ['hann', 'hamming', 'blackman', 'bartlett', 'flattop']
 
         self.Frame_WindowTimeBase = ttk.Frame(parent)
-        self.Frame_WindowTimeBase.pack(anchor="w", pady=5, fill=tk.X)
-        self.Frame_WindowTimeBase.columnconfigure(2, weight=2)
+        # self.Frame_WindowTimeBase.pack(anchor="w", pady=5, fill=tk.X)
+        self.Frame_WindowTimeBase.pack(anchor="w", pady=5)
+        # self.Frame_WindowTimeBase.columnconfigure(4, weight=3)
         
-        ttk.Label(self.Frame_WindowTimeBase, text="Windows STFT :").grid(row = 0, column = 0, sticky="w", padx=10,)
+        ttk.Label(self.Frame_WindowTimeBase, text="Windows STFT :").grid(row = 0, column = 0, sticky="w", padx=5)
         
         combo = ttk.Combobox(self.Frame_WindowTimeBase, textvariable=self.STFTPDVWindow_var, values=fenetres, state="readonly")
         combo.grid(row = 0, column = 1, sticky="w")
         combo.bind('<<ComboboxSelected>>', lambda e: self.update_STFTPDVInteractiveplot(self.slider.get()))
         
+        self.Btnnperseg = tk.Button(self.Frame_WindowTimeBase, text="nperseg", command=self.Updatenperseg)
+        self.Btnnperseg.grid(row=0, column=2, sticky="w", padx=5)
+        
+        self.Entnperseg = ttk.Entry(self.Frame_WindowTimeBase, width = 5)
+        self.Entnperseg.grid(row = 0, column = 3, sticky="w")
+        
         self.slider = ttk.Scale(self.Frame_WindowTimeBase, from_=2, to=2048, orient='horizontal')
         self.slider.set(self.nperseg)
-        self.slider.grid(row=0, column=2, sticky="we", padx = 5)
+        # self.slider.grid(row=0, column=4, sticky="w", padx = 5)
+        self.slider.grid(row=0, column=4, sticky="we", padx = 5)
         self.slider.configure(command=self.update_STFTPDVInteractiveplot)
         
         self.BtnHelp_Baseline = tk.Button(self.Frame_WindowTimeBase, text="?", command=self.InterfaceHelpBaseline)
-        self.BtnHelp_Baseline.grid(row = 0, column = 3)
+        self.BtnHelp_Baseline.grid(row = 0, column = 5, sticky="e")
         
-        ttk.Label(self.Frame_WindowTimeBase, text="Baseline management :").grid(row = 0, column = 4, sticky="w", padx=10,)
+        ttk.Label(self.Frame_WindowTimeBase, text="Baseline management :").grid(row = 0, column = 6, sticky="w", padx=5)
         
         self.BaseLineManag = tk.Button(self.Frame_WindowTimeBase, text="Delete", command = self.BaseLineDelete)
-        self.BaseLineManag.grid(row=0, column=5, sticky="we", padx = 5)
+        self.BaseLineManag.grid(row=0, column=7, sticky="w", padx = 5)
         
         ###
         self.Frame_ManualExtractSTFT = ttk.Frame(parent)
         self.Frame_ManualExtractSTFT.pack(anchor="w")
         
         self.BtnHelp_ManualExtractSTFT = tk.Button(self.Frame_ManualExtractSTFT, text="?", command=self.InterfaceHelpManVelExtr)
-        self.BtnHelp_ManualExtractSTFT.grid(row = 0, column = 0, pady = 2, sticky = "w")
+        self.BtnHelp_ManualExtractSTFT.grid(row = 0, column = 0, pady = 2)
         
         self.LblTitle_ManualExtractSTFT = tk.Label(self.Frame_ManualExtractSTFT, text="Manual Velocity Extraction", font=("Arial", 14, "bold"))
         self.LblTitle_ManualExtractSTFT.grid(row = 0, column = 1, sticky = "w")
@@ -725,6 +731,10 @@ class PDV :
             plt.close(fig_num)
         self.canvas.draw_idle()
         
+        self.fig.tight_layout()
+        self.fig.savefig(self.FName+'Spectrogram.png', dpi=200)
+        
+    
     def BaseLineDelete(self):
         self.BaseLineManag.configure(text="Reset")
         self.BaseLineManag.configure(command=self.ResetBaseline)
@@ -737,6 +747,7 @@ class PDV :
             plt.close(fig_num)
         self.canvas.draw_idle()
         
+    
     def ResetBaseline(self):
         self.BaseLineManag.configure(text="Delete")
         self.BaseLineManag.configure(command = self.BaseLineDelete)
@@ -820,6 +831,11 @@ class PDV :
         self.Btn_QuitHelp_Baseline.pack(anchor="w")
         
         self.Inter_Help_Baseline.mainloop()
+        
+    
+    def Updatenperseg(self):
+        Newnperseg = float(self.Entnperseg.get())
+        self.update_STFTPDVInteractiveplot(Newnperseg)
         
     
     def update_STFTPDVInteractiveplot(self, val):
@@ -1007,6 +1023,7 @@ class PDV :
         else:
             Ind_Tmax = np.argmin(np.abs(self.Time_stft - float(Tmax)*1e-6))
         
+        
         if var_check == 1:
             Ind_Fmin = np.argmin(np.abs(self.FePDV - float(Fmin)*1e9))
             Ind_Fmax = np.argmin(np.abs(self.FePDV - float(Fmax)*1e9))
@@ -1014,6 +1031,11 @@ class PDV :
             self.PDVSpectrogram_cut = self.PDVSpectrogramActive[Ind_Fmin:Ind_Fmax, Ind_Tmin:Ind_Tmax]
             Ind_FMaxT = np.argmax(self.PDVSpectrogram_cut, axis=0)
             self.Prof_FMax = self.FePDV[Ind_Fmin + Ind_FMaxT]
+            
+            self.Freq_pivot = self.Prof_FMax[0]
+            print("Freq pivot : " + str(self.Freq_pivot))
+            
+            self.Prof_FMax = self.Prof_FMax - self.Freq_pivot
             
             Bound_Prof = 0.5
             Bound_v_Inf = []
@@ -1040,6 +1062,9 @@ class PDV :
                     FstZero_PDVSpec_Cut_Sup = np.min(Zero_PDVSpec_Cut_Sup)
                 Bound_v_Sup.append(self.FePDV[Ind_Fmin+FstZero_PDVSpec_Cut_Sup+Ind_FMaxT[k]])
         
+            Bound_v_Sup = Bound_v_Sup - self.Freq_pivot 
+            Bound_v_Inf = Bound_v_Inf - self.Freq_pivot
+            
             # Test de fermeture automatique des onglets
             NameOngProf = "Freq Profile"        # Texte affiche comme nom de l'onglet
             
@@ -1079,7 +1104,7 @@ class PDV :
             
             FileNameSave = "Save_AutoExtract_Velocity_Prof.txt"
             np.savetxt(FileNameSave, (self.Time_stft[Ind_Tmin:Ind_Tmax], self.Prof_FMax*self.PDVFactor, (np.asarray(Bound_v_Inf)*self.PDVFactor), (np.asarray(Bound_v_Sup)*self.PDVFactor)), header="time (s), max vel (m/s), max vel +3dB (m/s), max vel -3dB (m/s)", delimiter=',', newline=';')
-
+            
     
     def NotebookGraphSpectrogram(self, parent):
         #raw datas plot
@@ -1145,7 +1170,7 @@ class PDV :
         self.MaxVelocityForChainResponse_var.set(f"{max_velocity:.2f}")
         self.VPivot_var.set(f"{self.VPivot:.2f}")
         
-      
+    
     def PDVReport(self): #Pdf report of shot
         
         print ("ReportVH pdf "+self.ShotNumber+' '+self. FName)

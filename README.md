@@ -63,20 +63,22 @@ Base signal for analysis by STFT and Wavelet:Tension(Time) .csv file
 	For each time, extract maximum frequency in the spectrogram at this time
 	
 **Automatic BaseLine Management :**
-
-![](https://github.com/ToolKitHephaistosLaserShock/PDVHephaistos/blob/main/Capture_BaseLine_Delete.png).
+![](https://github.com/ToolKitHephaistosLaserShock/PDVHephaistos/blob/c90a0e8b6aa25a6592d646e8c44c0f1792cc5357/Capture_BaseLine_Delete.png).
 
 	- Delete : extract spectrum at time previous any shock arrival, substract this spectrum at all time, ponderate by baseline ratio at each time
 	
 	- Reset : Two Spectrogram variables exist. The first one is the spectrogram calculated while the second is the displayed spectrogram. First remains untouched. Calculations (such as deleting the baseline) are only made on the second. When "adding" the baseline, reload the calculated spectrogram as the displayed one. No calculations.
 
+** Help in-app:**
+![](https://github.com/ToolKitHephaistosLaserShock/PDVHephaistos/blob/c90a0e8b6aa25a6592d646e8c44c0f1792cc5357/Capture_BaseLine_Delete.png).
+
+Quick help is available within the app. Click on the "?" question marks as in the picture.
 
 **Working on Conda env with :**
 
     - matplotlib
     - numpy
     - pyqt
-	- PyWavelets
     - pyqtwebengine
     - python 3.11
     - scipy
