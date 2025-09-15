@@ -70,7 +70,7 @@ Base signal for analysis by STFT and Wavelet:Tension(Time) .csv file
 	- Reset : Two Spectrogram variables exist. The first one is the spectrogram calculated while the second is the displayed spectrogram. First remains untouched. Calculations (such as deleting the baseline) are only made on the second. When "adding" the baseline, reload the calculated spectrogram as the displayed one. No calculations.
 
 ** Help in-app:**
-![](https://github.com/ToolKitHephaistosLaserShock/PDVHephaistos/blob/c90a0e8b6aa25a6592d646e8c44c0f1792cc5357/Capture_BaseLine_Delete.png).
+![](https://github.com/ToolKitHephaistosLaserShock/PDVHephaistos/blob/2fb299543817dc3a313a5cb576fec5741a7e6ae4/Capture_Help.png).
 
 Quick help is available within the app. Click on the "?" question marks as in the picture.
 
