@@ -59,8 +59,9 @@ Base signal for analysis by STFT and Wavelet:Tension(Time) .csv file
 	- def BaseLineDelete() - Delete baseline
 
 **Automatic Velocity Profile Extraction :**
+![](https://github.com/ToolKitHephaistosLaserShock/PDVHephaistos/blob/056bb88ebd103ba899c32df5100b4d9f7d6c3603/Figure_Exemple_ExtractionF.png).
 
-	For each time, extract maximum frequency in the spectrogram at this time
+	For each time step, maximum frequency is identified. Frequency at half-amplitude is also detected on both left and right of the maximum.
 	
 **Automatic BaseLine Management :**
 ![](https://github.com/ToolKitHephaistosLaserShock/PDVHephaistos/blob/c90a0e8b6aa25a6592d646e8c44c0f1792cc5357/Capture_BaseLine_Delete.png).
