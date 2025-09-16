@@ -16,7 +16,9 @@ Français. ⟨NNT : 2014ENAM0044⟩. ⟨tel-01165754⟩
 
 https://pastel.hal.science/tel-01165754
 
-** Base signal file for analysis :Tension(Time) .csv file **
+**Base signal file for analysis : Tension,Time  .csv file** 
+
+Comma can be changed easily in the DataLoad function
 
 You can suppress a number of headlines from the base signal file
 
