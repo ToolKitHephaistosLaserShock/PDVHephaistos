@@ -1,5 +1,7 @@
 # Free and easy tool for PDV simple analysis 
 
+## Extraction window in Hz and s for low velocity/pendulum 
+
 ![](https://github.com/ToolKitHephaistosLaserShock/PDVHephaistos/blob/OrientedLowVelocityPendulum/DataLoad.png).
 
 Thanks to Gabriel Prudhomme. 
