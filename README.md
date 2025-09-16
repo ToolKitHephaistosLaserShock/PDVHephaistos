@@ -71,6 +71,6 @@ Base signal for analysis :Tension(Time) .csv file
     
 **ShotTest.zip contains an example to be tested**
 
-![](https://github.com/ToolKitHephaistosLaserShock/PDVHephaistos/blob/OrientedLowVelocityPendulum/SFTinteractive.png).
+![](https://github.com/ToolKitHephaistosLaserShock/PDVHephaistos/blob/OrientedLowVelocityPendulum/SFTinteractive.png)
 
-![](https://raw.githubusercontent.com/ToolKitHephaistosLaserShock/PDVHephaistos/refs/heads/main/rawdata.png)
+
