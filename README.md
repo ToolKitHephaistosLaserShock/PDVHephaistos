@@ -47,7 +47,9 @@ Base signal for analysis :Tension(Time) .csv file
     - def SetPDVFFT(self) - calculate FFT of raw datas :  Tension and related Time
 
     - def SetSTFTPDV(self,nperseg) - Calculate STFT from raw data on number of point - nperseg
-
+    
+    - def SetWaveletTransformPDV(self, WidthWavelet)- Continuous Wavelet Transform (CWT) using PyWavelets - WidthWavelet : number of scale (scales).
+    
     - def SetVelocity() - calculate velocity m/ss
 
     - def PDVReport() - pdf report with all datas and graph for basic analysis, datas, FFFT, Spectrogram,baseline.  
