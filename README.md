@@ -16,7 +16,9 @@ Français. ⟨NNT : 2014ENAM0044⟩. ⟨tel-01165754⟩
 
 https://pastel.hal.science/tel-01165754
 
-Base signal for analysis :Tension(Time) .csv file
+** Base signal file for analysis :Tension(Time) .csv file **
+
+You can suppress a number of headlines from the base signal file
 
 **class > PDV(Time,Tension,ChainResponse,PDVShift,PDVFactor,FName,ShotNumber)**
 
