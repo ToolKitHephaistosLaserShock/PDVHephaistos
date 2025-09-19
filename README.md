@@ -2,7 +2,7 @@
 
 ## Extraction window in Hz and s for low velocity/pendulum 
 
-By Laurent Berthe & Ronan Delalande @PIMM lab 
+Citation : Berthe, L., & Delalande, R. (2025). ToolKitHephaistosLaserShock/PDVHephaistos: PDVHephaistos (Latest). Zenodo. https://doi.org/10.5281/zenodo.16684803 
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.16684803.svg)](https://doi.org/10.5281/zenodo.16684803)
 
