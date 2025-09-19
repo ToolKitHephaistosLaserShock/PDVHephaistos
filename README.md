@@ -2,6 +2,10 @@
 
 ## Extraction window in Hz and s for low velocity/pendulum 
 
+By Laurent Berthe & Ronan Delalande 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.16684803.svg)](https://doi.org/10.5281/zenodo.16684803)
+
+
 ![](https://github.com/ToolKitHephaistosLaserShock/PDVHephaistos/blob/OrientedLowVelocityPendulum/DataLoad.png).
 
 Thanks to Gabriel Prudhomme. Étude du nuage de particules éjectées sous choc : apports de la Vélocimétrie Hétérodyne. Mécanique des matériaux [physics.class-ph]. 
