@@ -4,17 +4,8 @@
 
 ![](https://github.com/ToolKitHephaistosLaserShock/PDVHephaistos/blob/OrientedLowVelocityPendulum/DataLoad.png).
 
-Thanks to Gabriel Prudhomme. 
-
-Étude du nuage de particules éjectées sous choc : apports de la Vélocimétrie Hétérodyne. Mécanique des matériaux [physics.class-ph]. 
-
-Ecole nationale supérieure d'arts et métiers
-
-ENSAM, 2014.
-
-Français. ⟨NNT : 2014ENAM0044⟩. ⟨tel-01165754⟩
-
-https://pastel.hal.science/tel-01165754
+Thanks to Gabriel Prudhomme. Étude du nuage de particules éjectées sous choc : apports de la Vélocimétrie Hétérodyne. Mécanique des matériaux [physics.class-ph]. 
+Ecole nationale supérieure d'arts et métiers,ENSAM, 2014.Français. ⟨NNT : 2014ENAM0044⟩. ⟨tel-01165754⟩ https://pastel.hal.science/tel-01165754
 
 **Base signal file for analysis : Tension,Time  .csv file** 
 
