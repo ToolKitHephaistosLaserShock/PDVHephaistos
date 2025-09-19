@@ -2,7 +2,8 @@
 
 ## Extraction window in Hz and s for low velocity/pendulum 
 
-By Laurent Berthe & Ronan Delalande 
+By Laurent Berthe & Ronan Delalande @PIMM lab 
+
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.16684803.svg)](https://doi.org/10.5281/zenodo.16684803)
 
 
