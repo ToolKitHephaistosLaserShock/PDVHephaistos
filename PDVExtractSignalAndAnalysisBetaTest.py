@@ -1066,19 +1066,6 @@ class PDV :
         self.canvas.draw_idle()
         self.fig.savefig(self.FName+'Spectrogram.png', dpi=200)
         
-    
-    def BaseLineDelete(self):
-        self.BaseLineManag.configure(text="Reset")
-        self.BaseLineManag.configure(command=self.ResetBaseline)
-        BaseLineFreq = np.argmax(self.PDVSpectrogram[:, 5])
-        VecBaseLine = np.abs(self.PDVSpectrogram[:, 5])
-        for k in range(len(self.Time_stft)):
-            self.PDVSpectrogramActive[:, k] = np.abs(self.PDVSpectrogram[:, k]) - VecBaseLine*np.abs(self.PDVSpectrogram[BaseLineFreq, k])/np.abs(self.PDVSpectrogram[BaseLineFreq, 5])
-        self.quadmesh = self.ax.pcolormesh(self.Time_stft/self.Time_OM_Long, self.FePDV/self.Freq_OM, self.PDVSpectrogramActive, shading='gouraud')
-        for fig_num in plt.get_fignums():
-            plt.close(fig_num)
-        self.canvas.draw_idle()
-        
     def ResetBaseline(self):
         self.BaseLineManag.configure(text="Delete")
         self.BaseLineManag.configure(command = self.BaseLineDelete)
