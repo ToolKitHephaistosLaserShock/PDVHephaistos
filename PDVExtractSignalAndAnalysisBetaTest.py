@@ -1165,9 +1165,8 @@ class PDV :
         
     
     def Updatenperseg(self):
-		
-		    try:
-        # Read width
+		try:
+        	# Read width
             nperseg_str = self.nperseg_var.get()
             self.nperseg = int(float(nperseg_str))
             print ("self.nperseg :",self.nperseg )
