@@ -1,20 +1,22 @@
 # Free and easy tool for PDV simple analysis 
 
-![](https://github.com/ToolKitHephaistosLaserShock/PDVHephaistos/blob/main/DataLoad.png).
+## Extraction window in Hz and s for low velocity/pendulum 
 
-Thanks to Gabriel Prudhomme. 
+Citation : Berthe, L., & Delalande, R. (2025). ToolKitHephaistosLaserShock/PDVHephaistos: PDVHephaistos (Latest). Zenodo. https://doi.org/10.5281/zenodo.16684803 
 
-Étude du nuage de particules éjectées sous choc : apports de la Vélocimétrie Hétérodyne. Mécanique des matériaux [physics.class-ph]. 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.16684803.svg)](https://doi.org/10.5281/zenodo.16684803)
 
-Ecole nationale supérieure d'arts et métiers
 
-ENSAM, 2014.
+![](https://github.com/ToolKitHephaistosLaserShock/PDVHephaistos/blob/OrientedLowVelocityPendulum/DataLoad.png).
 
-Français. ⟨NNT : 2014ENAM0044⟩. ⟨tel-01165754⟩
+Thanks to Gabriel Prudhomme. Étude du nuage de particules éjectées sous choc : apports de la Vélocimétrie Hétérodyne. Mécanique des matériaux [physics.class-ph]. 
+Ecole nationale supérieure d'arts et métiers,ENSAM, 2014.Français. ⟨NNT : 2014ENAM0044⟩. ⟨tel-01165754⟩ https://pastel.hal.science/tel-01165754
 
-https://pastel.hal.science/tel-01165754
+**Base signal file for analysis : Tension,Time  .csv file** 
 
-Base signal for analysis by STFT and Wavelet:Tension(Time) .csv file
+Comma can be changed easily in the DataLoad function
+
+You can suppress a number of headlines from the base signal file
 
 **class > PDV(Time,Tension,ChainResponse,PDVShift,PDVFactor,FName,ShotNumber)**
 
@@ -47,8 +49,10 @@ Base signal for analysis by STFT and Wavelet:Tension(Time) .csv file
     - def SetPDVFFT(self) - Calculate FFT of raw datas :  Tension and related Time
 
     - def SetSTFTPDV(self,nperseg) - Calculate STFT from raw data on number of point - nperseg
-
-    - def SetWavelet(self,WidthWavelet) - Calculate Wavelet from raw data on number of point - nperseg and function (Morelet MexHat)
+		
+    - def SetWaveletTransformPDV(self, WidthWavelet)- Continuous Wavelet Transform (CWT) using PyWavelets - WidthWavelet : number of scale (scales).
+    
+    - def SetVelocity() - calculate velocity m/ss
 
     - def SetVelocity() - Calculate velocity m/ss
 
@@ -90,5 +94,6 @@ Quick help is available within the app. Click on the "?" question marks as in th
     
 **ShotTest.zip contains an example to be tested**
 
+![](https://github.com/ToolKitHephaistosLaserShock/PDVHephaistos/blob/OrientedLowVelocityPendulum/SFTinteractive.png)
 
-![](https://github.com/ToolKitHephaistosLaserShock/PDVHephaistos/blob/main/SFTinteractive.png "SFT Interactive").
+![](https://github.com/ToolKitHephaistosLaserShock/PDVHephaistos/blob/OrientedLowVelocityPendulum/Velocity.png)

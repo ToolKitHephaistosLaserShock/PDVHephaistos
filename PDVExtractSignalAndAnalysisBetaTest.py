@@ -100,8 +100,10 @@ class PDV :
         self.WidthWavelet=WidthWavelet
         self.STFTPDVWindow='hamming'
         self.WaveletFunctionPDV='morl'
+				
+        self.nperseg=500
         
-        # Tools functions for calculation *****************************       
+			 	# Tools functions for calculation *****************************
         #print ("Design*****")
         self.VPivot=self.LambdaLaser*self.Shift/2
         #print("VPivot (m/s) :",self.VPivot)
@@ -194,6 +196,12 @@ class PDV :
         print("self.Time_OM_Court : " + str(self.Time_OM_Court))
         print("self.Lbl_Freq_unit : " + str(self.Lbl_Freq_unit))
         print("self.Freq_OM :" + str(self.Freq_OM))
+
+        print ("## PDVSetFrAcquisition calculation")
+        self.Dtime=self.Time[2]-self.Time[1]
+        self.FAcquisition=1/self.Dtime
+        print ("DTime (ns) :", self.Dtime*1e9)
+        print ("FAquisition (GS/s) :",f"{self.FAcquisition*1e-9:e}")
         return
         
     
@@ -217,10 +225,8 @@ class PDV :
         WidthWavelet : number of scale (scales).
         """
         print ("## Wavelet signal calculation")
-        
         # Define scale
         scales = np.arange(1, WidthWavelet)
-        
         # Calcul CWT 
         self.WaveletFrequencies=[]
         self.WaveletSignalPDV=[]
@@ -272,15 +278,17 @@ class PDV :
         # Close all figures
         for fig_num in plt.get_fignums():
             plt.close(fig_num)
-            
+						
+        
     def CreateInputsTab(self, parent): # Tab for data set input and PDV calculation
         style = ttk.Style()
         style.configure('TButton', font=('Arial', 12, 'bold'))
         
         # Variables for tab printing on screen
+        self.LineSuppressed_var= tk.StringVar(value=1)
         self.shot_dir = tk.StringVar()
         self.fname = tk.StringVar()
-        self.nperseg_var = tk.IntVar(value=500)
+        self.nperseg_var = tk.IntVar(value=self.nperseg)
         self.ChainResponse_var = tk.DoubleVar(value=self.ChainResponse * 1e-9)
         #Unit for print in nm
         Wavelength=self.LambdaLaser*1e9
@@ -320,7 +328,11 @@ class PDV :
         self.Cbo_TimeUnits = ttk.Combobox(self.Frame_Time_Unit, textvariable=self.List_Lbl_Time_Units, values=self.Choices_time_unit, state="readonly")
         self.Cbo_TimeUnits.pack(anchor = "w", padx=5, side=tk.LEFT)
         ttk.Label(self.Frame_Time_Unit, text="assuming file data are in s.").pack(side=tk.LEFT, anchor="w")
-        # self.Cbo_TimeUnits.bind('<<ComboboxSelected>>', lambda e: self.unitchoicefunc(self.Cbo_TimeUnits.get()))
+
+        ttk.Label(parent, text="Lines Suppressed on data file").pack(pady=5)
+        frame_LineSuppressed= tk.Frame(parent)
+        frame_LineSuppressed.pack()
+        tk.Entry(parent, textvariable= self.LineSuppressed_var, width=15).pack()
         
         # Launch analysis
         ttk.Label(parent, text="Spectrogram, Raw datas and velocity figures are saved in png format ").pack(pady=10)
@@ -372,7 +384,6 @@ class PDV :
         ttk.Button(parent, text="PDV Parameters Calculations", style='TButton',command=self.PDVParameters).pack(pady=10)
         
         ttk.Separator(parent, orient="horizontal").pack(fill="x", padx=10, pady=5, ipady=3)
-        
         ttk.Button(parent, text="Exit", style='TButton', command=lambda: os._exit(0)).pack(pady=5)
         
     
@@ -401,7 +412,6 @@ class PDV :
         self.Btn_QuitHelp_ManVelExtract.pack(anchor="w")
         
         self.Inter_Help_ManVelExtract.mainloop()
-
     def select_directory(self):
         dirname = fd.askdirectory(title="Select Shot Directory")
         if dirname:
@@ -414,8 +424,8 @@ class PDV :
         if filename:
             self.fname.set(os.path.basename(filename))
             self.selected_file_fullpath = filename  # Full path if mandatory later
-        
-    
+				
+		
     def CreateConsoleTab(self):
         self.frame_console = ttk.Frame(self.notebook)
         self.notebook.add(self.frame_console, text="Console")
@@ -433,11 +443,21 @@ class PDV :
             if tab_text not in ("Datas Load & Operations","Console"):
                 self.notebook.forget(tab_id)
         
-        # Récupère les valeurs saisies
+        try:
+        # Read width
+            width_str = self.LineSuppressed_var.get()
+            self.LinesSuppressed = int(float(width_str))
+            if self.LinesSuppressed < 1:
+                print("Lines Suppressed need to be > 0.")
+                return
+        except ValueError:
+            print("Invalid value")
+            return
+
         self.ShotNumber = self.shot_dir.get()
         self.FName = self.fname.get()
         self.nperseg = self.nperseg_var.get()
-        
+				
         #data print on consol output
         ##Directory Shots
         print ("##Goto directory ShotNUmber")
@@ -458,11 +478,13 @@ class PDV :
         print("window type        : " +self.STFTPDVWindow)
         print("Wavelet function   : " +self.WaveletFunctionPDV)
         print("Wavelet width      : ", self.WidthWavelet)
-        
+        print( "Lines suppressed  : ", self.LinesSuppressed)
         #Get datas and inital calculation
-        self.DataLoad(1)  # data laad
+        self.DataLoad(self.LinesSuppressed)  # data load
+				
         self.PDVSetFrAcquisition()
         self.SetPDVFFT()
+        print ("self.nperseg      : ", self.nperseg, self.Dtime)
         self.SetSTFTPDV(self.nperseg)
         
         for fig_num in plt.get_fignums():
@@ -489,8 +511,7 @@ class PDV :
         #clean figures
         for fig_num in plt.get_fignums():
             plt.close(fig_num)
-        
-    
+						
     #interactive wavelet calculation analysis in playing with width and and function
     def CreateWaveletPDVInteractive(self, parent):
     
@@ -614,10 +635,8 @@ class PDV :
                aspect='auto',
                vmax=abs(self.WaveletSignalPDV).max()
                ))
-        
         self.wcanvas.draw_idle()
-        
-    
+			
     def update_WaveletDVInteractiveplot(self,event=None):
         try:
         # Read width
@@ -638,8 +657,6 @@ class PDV :
         self.wlabel2.config(
         text=f"Number of points : {len(self.Time)} pt, FAcquisition ("+str(self.Lbl_Freq_unit)+"): "+str(self.FAcquisition/self.Freq_OM)
         )
-
-        # Save actual zoom
         wxlim = self.wx.get_xlim()
         wylim = self.wx.get_ylim()
 
@@ -650,9 +667,6 @@ class PDV :
         self.wx.clear()
 
         # Aplat time/frequency
-        # extent = [self.Time.min(), self.Time.max(),
-        #       self.WaveletFrequencies.min(), self.WaveletFrequencies.max()]
-        
         extent = [self.Time.min()/self.Time_OM_Long, self.Time.max()/self.Time_OM_Long,
               self.WaveletFrequencies.min()/self.Freq_OM, self.WaveletFrequencies.max()/self.Freq_OM]
 
@@ -665,9 +679,7 @@ class PDV :
             vmax=np.abs(self.WaveletSignalPDV).max()
             )
 
-        # self.wx.set_xlabel("Time (s)")
-        # self.wx.set_ylabel("Frequency (Hz)")
-        
+
         self.wx.set_xlabel("Time ("+str(self.Lbl_Time_unit_Long)+")")
         self.wx.set_ylabel("Frequency ("+str(self.Lbl_Freq_unit)+")")
         
@@ -682,8 +694,7 @@ class PDV :
 
         # Up date screen
         self.wcanvas.draw_idle()
-        
-    
+
     def ExtractWaveletVelocityNotebook(self):
         self.WVelocityProfile = []
         
@@ -700,6 +711,7 @@ class PDV :
             self.wcanvas.mpl_disconnect(self.Wcid)
             self.Btn_ManualExtractWL.configure(text="Start extraction", command=self.ExtractWaveletVelocityNotebook)
             print("Extraction is over")
+		
             # === Créer un nouvel onglet pour afficher les points ===
             self.Wframe_velocity = ttk.Frame(self.notebook)
             self.notebook.add(self.Wframe_velocity, text="Wavelet Velocity Extraction")
@@ -716,7 +728,6 @@ class PDV :
                 plt.close(fig_num)
     
             Wx_vel.set_title("Velocity profile " + self.FName)
-            # Wx_vel.set_xlabel("Temps (s)")
             Wx_vel.set_xlabel("Time ("+str(self.Lbl_Time_unit_Long)+")")
             Wx_vel.set_ylabel("Velocity (m/s)")
             Wx_vel.grid(True)
@@ -730,7 +741,6 @@ class PDV :
                 # y3 = y2 - self.Freq_pivot
                 # y4 = y3*self.PDVFactor
                 Wx_vel.plot(x, y, 'b.-')
-                # Wx_vel.plot(x, y, 'rx-')
                 Wx_vel.legend()
                 print ('Save velocity profile in '+self.FName+"VelocityProfileWavelet.csv")
                 np.savetxt(self.FName+"VelocityProfileWavelet.csv", np.vstack((x ,y)).T, delimiter=',')
@@ -898,7 +908,7 @@ class PDV :
         self.toolbar = NavigationToolbar2Tk(self.canvas, parent)
         self.toolbar.update()
         self.toolbar.pack(side=tk.TOP, fill=tk.X)
-    
+    		
         # self.label1 = tk.Label(parent, text=f"STFT Window (nperseg) : {self.nperseg} pt , {self.WindowsSize*1e9:.3f} ns, Window : {self.STFTPDVWindow}")
         self.label1 = tk.Label(parent, text=f"STFT Window (nperseg) : {self.nperseg} pt ,"+ str(self.WindowsSize*self.Freq_OM) + self.Lbl_Time_unit_Court + ", Window : {self.STFTPDVWindow}")
         self.label1.pack()
@@ -1040,8 +1050,20 @@ class PDV :
         for fig_num in plt.get_fignums():
             plt.close(fig_num)
         self.canvas.draw_idle()
-        
+     
+
+    def BaseLineDelete(self):
+        self.BaseLineManag.configure(text="Reset")
+        self.BaseLineManag.configure(command=self.ResetBaseline)
+        BaseLineFreq = np.argmax(self.PDVSpectrogram[:, 5])
+        VecBaseLine = np.abs(self.PDVSpectrogram[:, 5])
+        for k in range(len(self.Time_stft)):
+            self.PDVSpectrogramActive[:, k] = np.abs(self.PDVSpectrogram[:, k]) - VecBaseLine*np.abs(self.PDVSpectrogram[BaseLineFreq, k])/np.abs(self.PDVSpectrogram[BaseLineFreq, 5])
+        self.quadmesh = self.ax.pcolormesh(self.Time_stft, self.FePDV, self.PDVSpectrogramActive, shading='gouraud')
+        for fig_num in plt.get_fignums():
+            plt.close(fig_num)
         self.fig.tight_layout()
+        self.canvas.draw_idle()
         self.fig.savefig(self.FName+'Spectrogram.png', dpi=200)
         
     
@@ -1057,7 +1079,6 @@ class PDV :
             plt.close(fig_num)
         self.canvas.draw_idle()
         
-    
     def ResetBaseline(self):
         self.BaseLineManag.configure(text="Delete")
         self.BaseLineManag.configure(command = self.BaseLineDelete)
@@ -1144,6 +1165,19 @@ class PDV :
         
     
     def Updatenperseg(self):
+		
+		    try:
+        # Read width
+            nperseg_str = self.nperseg_var.get()
+            self.nperseg = int(float(nperseg_str))
+            print ("self.nperseg :",self.nperseg )
+            if self.nperseg <= 2:
+                print("nperseg need to be >2.")
+                return
+        except ValueError:
+            print("Invalid value")
+            return
+					
         Newnperseg = float(self.Entnperseg.get())
         self.update_STFTPDVInteractiveplot(Newnperseg)
         
@@ -1156,11 +1190,11 @@ class PDV :
         self.nperseg=int(val)
         
         self.label1.config(
-            text=f"STFT Window (nperseg) : {self.nperseg} pt ,"+ str(self.WindowsSize*self.Freq_OM) + self.Lbl_Time_unit_Court + ", Window : {self.STFTPDVWindow}")
+            text=f"STFT Window (nperseg) : {self.nperseg} pt ,"+ str(self.WindowsSize*self.Freq_OM) + self.Lbl_Time_unit_Court + f", Window : {self.STFTPDVWindow}")
         
         self.label2.config(
             text=f"Number of points : {len(self.Time)} pt, FAcquisition ("+str(self.Lbl_Freq_unit)+"): "+str(self.FAcquisition/self.Freq_OM))
-                
+        
         # save zooming
         xlim = self.ax.get_xlim()
         ylim = self.ax.get_ylim()
@@ -1220,6 +1254,7 @@ class PDV :
             self.Velocity_buttonSTFT.configure(text="Start extraction", command=self.ExtractVelocityNotebook)
             
             # === Créer un nouvel onglet pour afficher les points ===
+
             self.frame_velocity = ttk.Frame(self.notebook)
             self.notebook.add(self.frame_velocity, text="STFT Velocity Extraction")
             self.notebook.select(self.frame_velocity)
@@ -1241,7 +1276,6 @@ class PDV :
             ax_vel.set_ylabel("Velocity (m/s)") #ICITIME
             
             ax_vel.grid(True)
-            
             if self.VelocityProfile:
                 x, y = zip(*self.VelocityProfile)
                 x = np.asarray(list(x))
@@ -1255,10 +1289,6 @@ class PDV :
                 np.savetxt(self.FName+"VelocityProfile.csv", np.vstack((x ,y)).T, delimiter=',')
                 print ('Save velocity plat in '+self.FName+"VelocityProfile.png")
                 fig_vel.savefig(self.FName+'Velocity.png')
-                
-            canvas_vel.draw_idle()
-            
-        
         self.Velocity_buttonSTFT.configure(text="Stop extraction", command=stop_recording)
         
         # Connexion click
