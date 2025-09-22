@@ -298,17 +298,17 @@ class PDV :
         self.VPivot_var=tk.StringVar(value=f'{self.VPivot:.3f}')
         
         ttk.Label(parent, text="PDV Analysis", font=("Arial", 14, "bold")).pack(anchor="w", padx=10)
-        ttk.Separator(parent, orient="horizontal").pack(fill="x", padx=10, pady=2, ipady=3)
+        ttk.Separator(parent, orient="horizontal").pack(fill="x", padx=10, ipady=3)
         #Datas selection ********************************************************
         # Directory choice (ShotNumber)
-        ttk.Label(parent, text="Shot Directory:").pack(pady=5)
+        ttk.Label(parent, text="Shot Directory:").pack()
         frame_dir = tk.Frame(parent)
         frame_dir.pack()
         tk.Entry(frame_dir, textvariable=self.shot_dir, width=50).pack(side=tk.LEFT, padx=5)
         tk.Button(frame_dir, text="Select Directory", command=self.select_directory).pack(side=tk.LEFT)
     
         # File date choice (FName)
-        ttk.Label(parent, text="File to analyse .csv with template (Time(s),Tension(V))").pack(pady=2)
+        ttk.Label(parent, text="File to analyse .csv with template (Time(s),Tension(V))").pack()
         frame_file = tk.Frame(parent)
         frame_file.pack()
         tk.Entry(frame_file, textvariable=self.fname, width=50).pack(side=tk.LEFT, padx=5)
@@ -329,13 +329,13 @@ class PDV :
         self.Cbo_TimeUnits.pack(anchor = "w", padx=5, side=tk.LEFT)
         ttk.Label(self.Frame_Time_Unit, text="assuming file data are in s.").pack(side=tk.LEFT, anchor="w")
 
-        ttk.Label(parent, text="Lines Suppressed on data file").pack(pady=5)
+        ttk.Label(parent, text="Lines Suppressed on data file").pack()
         frame_LineSuppressed= tk.Frame(parent)
         frame_LineSuppressed.pack()
         tk.Entry(parent, textvariable= self.LineSuppressed_var, width=15).pack()
         
         # Launch analysis
-        ttk.Label(parent, text="Spectrogram, Raw datas and velocity figures are saved in png format ").pack(pady=10)
+        ttk.Label(parent, text="Spectrogram, Raw datas and velocity figures are saved in png format ").pack(pady=2)
         ttk.Label(parent, text="Velocity data set in .csv file in ShotNumber Directory").pack(pady=5)
         ttk.Button(parent, text="Load Data Set for analysis", style='TButton',command=self.launch_analysis).pack(pady=5)
         
@@ -343,7 +343,7 @@ class PDV :
         ttk.Separator(parent, orient="horizontal").pack(fill="x", padx=10, pady=2)
         
         # LaserPDV Wavelength
-        ttk.Label(parent, text="Laser PDV Wavelength (nm) :").pack(pady=10)
+        ttk.Label(parent, text="Laser PDV Wavelength (nm) :").pack(pady=2)
         tk.Entry(parent, textvariable=self.LambdaLaser_var, width=15).pack()
         
         # Line for tab
